@@ -1,5 +1,5 @@
 # .github/workflows/**foodgram_worflow.yml**
-name: API deploy workflow
+name: Foodgram main workflow
 
 on: push
 
