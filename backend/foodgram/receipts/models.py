@@ -20,6 +20,13 @@ class Tags(models.Model):
     slug = models.SlugField(
         'Slug', help_text='Введите slug тега')
 
+    class Meta:
+        verbose_name = 'тег'
+        verbose_name_plural = 'теги'
+
+    def __str__(self):
+        return self.name
+
 
 class Ingridients(models.Model):
     name = models.CharField(
@@ -27,8 +34,15 @@ class Ingridients(models.Model):
     measurement_unit = models.CharField(
         'Единица измерения', max_length=32)
 
+    class Meta:
+        verbose_name = 'ингридиент'
+        verbose_name_plural = 'ингридиенты'
 
-class Receipt(models.Model):
+    def __str__(self):
+        return f'{self.name}, {self.measurement_unit}'
+
+
+class Receipts(models.Model):
     """Модель рецептов."""
     author = models.ForeignKey(
         User, verbose_name='Автор рецепта', on_delete=models.PROTECT,
@@ -47,3 +61,11 @@ class Receipt(models.Model):
         Tags, verbose_name='Теги', related_name='receipts')
     ingridients = models.ManyToManyField(
         Ingridients, verbose_name='Ингридиенты', related_name='ingridients')
+
+    class Meta:
+        verbose_name = 'рецепт'
+        verbose_name_plural = 'рецепты'
+
+    def __str__(self):
+        return self.name
+
