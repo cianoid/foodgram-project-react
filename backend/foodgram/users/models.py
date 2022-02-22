@@ -14,3 +14,5 @@ class CustomUser(AbstractUser):
     last_name = models.CharField(
         'Фамилия', max_length=150)
 
+    def __str__(self):
+        return f'{self.first_name} {self.last_name}'
