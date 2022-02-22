@@ -60,7 +60,8 @@ class Receipts(models.Model):
     tags = models.ManyToManyField(
         Tags, verbose_name='Теги', related_name='receipts')
     ingridients = models.ManyToManyField(
-        Ingridients, verbose_name='Ингридиенты', related_name='ingridients')
+        Ingridients, verbose_name='Ингридиенты', related_name='ingridients',
+        through='ReceiptIngridientsRelation')
 
     class Meta:
         verbose_name = 'рецепт'
@@ -69,3 +70,8 @@ class Receipts(models.Model):
     def __str__(self):
         return self.name
 
+
+class ReceiptIngridientsRelation(models.Model):
+    receipt = models.ForeignKey(Receipts, on_delete=models.CASCADE)
+    ingridient = models.ForeignKey(Ingridients, on_delete=models.CASCADE)
+    amount = models.PositiveSmallIntegerField()
