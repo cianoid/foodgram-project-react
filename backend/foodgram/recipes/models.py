@@ -42,11 +42,11 @@ class Ingredient(models.Model):
         return f'{self.name}, {self.measurement_unit}'
 
 
-class Receipt(models.Model):
+class Recipe(models.Model):
     """Модель рецептов."""
     author = models.ForeignKey(
         User, verbose_name='Автор рецепта', on_delete=models.PROTECT,
-        related_name='receipts', )
+        related_name='recipes', )
     created = models.DateTimeField(
         verbose_name='Дата создания', auto_now_add=True)
     image = ImageField(
@@ -58,10 +58,10 @@ class Receipt(models.Model):
     cooking_time = models.PositiveSmallIntegerField(
         'Время приготовления', validators=(MinValueValidator,))
     tags = models.ManyToManyField(
-        Tag, verbose_name='Теги', related_name='receipts')
+        Tag, verbose_name='Теги', related_name='recipes')
     ingredients = models.ManyToManyField(
         Ingredient, verbose_name='Ингридиенты', related_name='ingredients',
-        through='IngredientReceiptRelation')
+        through='IngredientRecipeRelation')
 
     class Meta:
         verbose_name = 'рецепт'
@@ -71,7 +71,7 @@ class Receipt(models.Model):
         return self.name
 
 
-class IngredientReceiptRelation(models.Model):
-    receipt = models.ForeignKey(Receipt, on_delete=models.CASCADE)
+class IngredientRecipeRelation(models.Model):
+    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
     ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
     amount = models.PositiveSmallIntegerField()

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from receipts.models import Ingredient, Receipt, Tag
+from recipes.models import Ingredient, Recipe, Tag
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -15,7 +15,7 @@ class IngredientSerializer(serializers.ModelSerializer):
         model = Ingredient
 
 
-class ReceiptSerializer(serializers.ModelSerializer):
+class RecipeSerializer(serializers.ModelSerializer):
     class Meta:
         fields = '__all__'
-        model = Receipt
+        model = Recipe

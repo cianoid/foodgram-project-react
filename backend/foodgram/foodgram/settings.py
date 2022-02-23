@@ -27,10 +27,9 @@ INSTALLED_APPS = [
     'djoser',
     'sorl.thumbnail',
     'rest_framework',
-    # 'rest_framework_simplejwt',
 
     'api.apps.ApiConfig',
-    'receipts.apps.ReceiptsConfig',
+    'recipes.apps.RecipesConfig',
     'users.apps.UsersConfig',
 ]
 

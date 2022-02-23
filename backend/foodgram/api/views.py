@@ -1,8 +1,8 @@
 from rest_framework import mixins, viewsets
 from rest_framework.permissions import AllowAny
 
-from receipts.models import Ingredient, Receipt, Tag
-from .serializers import IngredientSerializer, ReceiptSerializer, TagSerializer
+from recipes.models import Ingredient, Recipe, Tag
+from .serializers import IngredientSerializer, RecipeSerializer, TagSerializer
 
 
 class ListRetrieveViewSet(viewsets.GenericViewSet, mixins.ListModelMixin,
@@ -24,9 +24,9 @@ class IngredientViewSet(ListRetrieveViewSet):
     serializer_class = IngredientSerializer
 
 
-class ReceiptViewSet(viewsets.ModelViewSet):
-    queryset = Receipt.objects.all()
-    serializer_class = ReceiptSerializer
+class RecipeViewSet(viewsets.ModelViewSet):
+    queryset = Recipe.objects.all()
+    serializer_class = RecipeSerializer
 
     lookup_field = 'id'
     # @TODO Check it
