@@ -5,7 +5,7 @@ import os
 
 from django.core.management.base import BaseCommand
 
-from receipts.models import Ingridients
+from receipts.models import Ingridient
 
 
 class Command(BaseCommand):
@@ -50,10 +50,10 @@ class Command(BaseCommand):
             raise SystemExit
 
         if wipe_data:
-            Ingridients.objects.all().delete()
+            Ingridient.objects.all().delete()
 
         for item in self.__load_data_from_file(filename, mimetype):
-            obj = Ingridients(**item)
+            obj = Ingridient(**item)
             obj.save()
 
 

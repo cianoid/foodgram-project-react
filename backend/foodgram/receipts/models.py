@@ -8,7 +8,7 @@ from core.images import upload_to
 User = get_user_model()
 
 
-class Tags(models.Model):
+class Tag(models.Model):
     name = models.CharField(
         'Имя тега', max_length=150)
     color = models.CharField(
@@ -28,7 +28,7 @@ class Tags(models.Model):
         return self.name
 
 
-class Ingridients(models.Model):
+class Ingridient(models.Model):
     name = models.CharField(
         'Название ингридиента', max_length=200)
     measurement_unit = models.CharField(
@@ -42,7 +42,7 @@ class Ingridients(models.Model):
         return f'{self.name}, {self.measurement_unit}'
 
 
-class Receipts(models.Model):
+class Receipt(models.Model):
     """Модель рецептов."""
     author = models.ForeignKey(
         User, verbose_name='Автор рецепта', on_delete=models.PROTECT,
@@ -58,10 +58,10 @@ class Receipts(models.Model):
     cooking_time = models.PositiveSmallIntegerField(
         'Время приготовления', validators=(MinValueValidator,))
     tags = models.ManyToManyField(
-        Tags, verbose_name='Теги', related_name='receipts')
+        Tag, verbose_name='Теги', related_name='receipts')
     ingridients = models.ManyToManyField(
-        Ingridients, verbose_name='Ингридиенты', related_name='ingridients',
-        through='ReceiptIngridientsRelation')
+        Ingridient, verbose_name='Ингридиенты', related_name='ingridients',
+        through='IngridientReceiptRelation')
 
     class Meta:
         verbose_name = 'рецепт'
@@ -71,7 +71,7 @@ class Receipts(models.Model):
         return self.name
 
 
-class ReceiptIngridientsRelation(models.Model):
-    receipt = models.ForeignKey(Receipts, on_delete=models.CASCADE)
-    ingridient = models.ForeignKey(Ingridients, on_delete=models.CASCADE)
+class IngridientReceiptRelation(models.Model):
+    receipt = models.ForeignKey(Receipt, on_delete=models.CASCADE)
+    ingridient = models.ForeignKey(Ingridient, on_delete=models.CASCADE)
     amount = models.PositiveSmallIntegerField()
