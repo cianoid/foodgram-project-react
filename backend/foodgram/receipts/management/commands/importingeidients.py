@@ -5,7 +5,7 @@ import os
 
 from django.core.management.base import BaseCommand
 
-from receipts.models import Ingridient
+from receipts.models import Ingredient
 
 
 class Command(BaseCommand):
@@ -18,7 +18,7 @@ class Command(BaseCommand):
             'filename', type=str, help='Путь к файлу .json/.csv с данными')
         parser.add_argument(
             '--keep-existing-data', action='store_true',
-            help='Предварительная очистка данных модели Ingridients')
+            help='Предварительная очистка данных модели Ingredients')
 
     def __load_data_from_file(self, filename, mimetype):
         with open(filename, newline='') as fp:
@@ -50,10 +50,10 @@ class Command(BaseCommand):
             raise SystemExit
 
         if wipe_data:
-            Ingridient.objects.all().delete()
+            Ingredient.objects.all().delete()
 
         for item in self.__load_data_from_file(filename, mimetype):
-            obj = Ingridient(**item)
+            obj = Ingredient(**item)
             obj.save()
 
 

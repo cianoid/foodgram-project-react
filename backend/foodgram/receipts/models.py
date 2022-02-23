@@ -28,7 +28,7 @@ class Tag(models.Model):
         return self.name
 
 
-class Ingridient(models.Model):
+class Ingredient(models.Model):
     name = models.CharField(
         'Название ингридиента', max_length=200)
     measurement_unit = models.CharField(
@@ -59,9 +59,9 @@ class Receipt(models.Model):
         'Время приготовления', validators=(MinValueValidator,))
     tags = models.ManyToManyField(
         Tag, verbose_name='Теги', related_name='receipts')
-    ingridients = models.ManyToManyField(
-        Ingridient, verbose_name='Ингридиенты', related_name='ingridients',
-        through='IngridientReceiptRelation')
+    ingredients = models.ManyToManyField(
+        Ingredient, verbose_name='Ингридиенты', related_name='ingredients',
+        through='IngredientReceiptRelation')
 
     class Meta:
         verbose_name = 'рецепт'
@@ -71,7 +71,7 @@ class Receipt(models.Model):
         return self.name
 
 
-class IngridientReceiptRelation(models.Model):
+class IngredientReceiptRelation(models.Model):
     receipt = models.ForeignKey(Receipt, on_delete=models.CASCADE)
-    ingridient = models.ForeignKey(Ingridient, on_delete=models.CASCADE)
+    ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
     amount = models.PositiveSmallIntegerField()
