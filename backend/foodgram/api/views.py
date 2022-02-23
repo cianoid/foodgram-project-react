@@ -1,8 +1,8 @@
 from rest_framework import mixins, viewsets
 from rest_framework.permissions import AllowAny
 
-from receipts.models import Tag
-from .serializers import TagSerializer
+from receipts.models import Ingridient, Tag
+from .serializers import IngirdientSerializer, TagSerializer
 
 
 class ListRetrieveViewSet(viewsets.GenericViewSet, mixins.ListModelMixin,
@@ -15,3 +15,8 @@ class TagViewSet(ListRetrieveViewSet):
     search_fields = ('slug',)
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
+
+
+class IngridientViewSet(ListRetrieveViewSet):
+    queryset = Ingridient.objects.all()
+    serializer_class = IngirdientSerializer
