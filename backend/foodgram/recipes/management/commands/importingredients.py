@@ -55,5 +55,3 @@ class Command(BaseCommand):
         for item in self.__load_data_from_file(filename, mimetype):
             obj = Ingredient(**item)
             obj.save()
-
-

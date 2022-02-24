@@ -1,8 +1,9 @@
 from rest_framework import mixins, viewsets
 from rest_framework.permissions import AllowAny
 
+from api.serializers import (IngredientSerializer, RecipeSerializer,
+                             TagSerializer)
 from recipes.models import Ingredient, Recipe, Tag
-from .serializers import IngredientSerializer, RecipeSerializer, TagSerializer
 
 
 class ListRetrieveViewSet(viewsets.GenericViewSet, mixins.ListModelMixin,
