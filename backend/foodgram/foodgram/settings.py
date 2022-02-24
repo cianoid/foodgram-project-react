@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     'djoser',
     'sorl.thumbnail',
     'rest_framework',
+    'django_filters',
 
     'api.apps.ApiConfig',
     'recipes.apps.RecipesConfig',
