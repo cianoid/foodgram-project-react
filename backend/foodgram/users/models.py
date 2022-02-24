@@ -13,6 +13,8 @@ class CustomUser(AbstractUser):
         'Имя', max_length=150)
     last_name = models.CharField(
         'Фамилия', max_length=150)
+    is_subscribed = models.BooleanField(
+        blank=True, default=False)
 
     def __str__(self):
         return f'{self.first_name} {self.last_name}'
