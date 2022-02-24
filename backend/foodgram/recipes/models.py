@@ -64,6 +64,10 @@ class Recipe(models.Model):
     ingredients = models.ManyToManyField(
         Ingredient, verbose_name='Ингридиенты', related_name='ingredients',
         through='IngredientRecipeRelation')
+    is_favorited = models.BooleanField(
+        'dummy', blank=True, default=False)
+    is_in_shopping_cart = models.BooleanField(
+        'dummy', blank=True, default=False)
 
     class Meta:
         verbose_name = 'рецепт'
