@@ -28,13 +28,16 @@ class IngredientSerializer(serializers.ModelSerializer):
 
 class RecipeSerializerList(serializers.ModelSerializer):
     author = AuthorSerializer(required=False, many=False, read_only=True)
+    tags = TagSerializer(required=False, many=True, read_only=True)
+    ingredients = IngredientSerializer(
+        required=False, many=True, read_only=True)
 
     class Meta:
-        fields = '__all__'
+        exclude = ('created', )
         model = Recipe
 
 
 class RecipeSerializer(serializers.ModelSerializer):
     class Meta:
-        fields = '__all__'
+        exclude = ('created', )
         model = Recipe
