@@ -15,6 +15,12 @@ class IngredientSerializer(serializers.ModelSerializer):
         model = Ingredient
 
 
+class RecipeSerializerList(serializers.ModelSerializer):
+    class Meta:
+        fields = '__all__'
+        model = Recipe
+
+
 class RecipeSerializer(serializers.ModelSerializer):
     class Meta:
         fields = '__all__'
