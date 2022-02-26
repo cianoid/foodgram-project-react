@@ -1,4 +1,8 @@
+import base64
+import mimetypes
+
 from django.contrib.auth import get_user_model
+from django.core.files.base import ContentFile
 from rest_framework import serializers
 
 from recipes.models import Ingredient, Recipe, Tag, IngredientRecipeRelation
@@ -53,7 +57,35 @@ class RecipeSerializerList(serializers.ModelSerializer):
         model = Recipe
 
 
+class IngredientCreateSerializer(serializers.ModelSerializer):
+    id = serializers.PrimaryKeyRelatedField(
+        source='ingredient', queryset=Ingredient.objects.all())
+    amount = serializers.IntegerField(required=True)
+
+    class Meta:
+        fields = ('id', 'amount')
+        model = IngredientRecipeRelation
+
+
+class ImageBase64Field(serializers.ImageField):
+    def to_internal_value(self, data):
+        if isinstance(data, str) and data.startswith('data:image'):
+            mime_data, image_string = data.split(';base64,')
+            image_data = base64.b64decode(image_string)
+
+            mime_type = mime_data.removeprefix('data:')
+            extension = mimetypes.MimeTypes().guess_extension(mime_type)
+
+            data = ContentFile(image_data, name=f'temp.{extension}')
+
+        return super().to_internal_value(data)
+
+
 class RecipeSerializer(serializers.ModelSerializer):
+    ingredients = IngredientCreateSerializer(
+        required=True, many=True, read_only=False)
+    image = ImageBase64Field()
+
     class Meta:
         exclude = ('created', )
         model = Recipe
