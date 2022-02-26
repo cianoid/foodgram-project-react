@@ -8,6 +8,14 @@ from core.images import upload_to
 User = get_user_model()
 
 
+class BaseModel(models.Model):
+    created = models.DateTimeField(
+        verbose_name='Дата создания', auto_now_add=True)
+
+    class Meta:
+        abstract = True
+
+
 class Tag(models.Model):
     name = models.CharField(
         'Имя тега', max_length=150)
@@ -44,13 +52,11 @@ class Ingredient(models.Model):
         return f'{self.name}, {self.measurement_unit}'
 
 
-class Recipe(models.Model):
+class Recipe(BaseModel):
     """Модель рецептов."""
     author = models.ForeignKey(
         User, verbose_name='Автор рецепта', on_delete=models.PROTECT,
         related_name='recipes', )
-    created = models.DateTimeField(
-        verbose_name='Дата создания', auto_now_add=True)
     image = ImageField(
         'Картинка', upload_to=upload_to, blank=False)
     name = models.CharField(
