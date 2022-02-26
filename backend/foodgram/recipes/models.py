@@ -62,7 +62,7 @@ class Recipe(models.Model):
     tags = models.ManyToManyField(
         Tag, verbose_name='Теги', related_name='recipes')
     ingredients = models.ManyToManyField(
-        Ingredient, verbose_name='Ингридиенты', related_name='ingredients',
+        Ingredient, verbose_name='Ингридиенты', related_name='recipes',
         through='IngredientRecipeRelation')
     is_favorited = models.BooleanField(
         'dummy', blank=True, default=False)
