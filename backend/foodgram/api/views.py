@@ -1,12 +1,15 @@
-from django.shortcuts import get_object_or_404
+from django.contrib.auth import get_user_model
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, mixins, viewsets
 from rest_framework.permissions import AllowAny
 
 from api.filters import RecipeFilter
 from api.serializers import (IngredientSerializer, RecipeSerializer,
-                             RecipeSerializerList, TagSerializer)
+                             RecipeSerializerList, TagSerializer,
+                             CustomUserSerializer)
 from recipes.models import Ingredient, Recipe, Tag
+
+User = get_user_model()
 
 
 class ListRetrieveViewSet(viewsets.GenericViewSet, mixins.ListModelMixin,
@@ -47,3 +50,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
+
+
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = CustomUserSerializer
+    # @TODO Check it
+    permission_classes = (AllowAny,)
