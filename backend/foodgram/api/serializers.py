@@ -3,6 +3,7 @@ import mimetypes
 
 from django.contrib.auth import get_user_model
 from django.core.files.base import ContentFile
+from django.db import transaction
 from rest_framework import serializers
 
 from recipes.models import Ingredient, Recipe, Tag, IngredientRecipeRelation
@@ -81,10 +82,49 @@ class ImageBase64Field(serializers.ImageField):
         return super().to_internal_value(data)
 
 
+class CustomUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = ('id', 'username', 'first_name', 'last_name',
+                  'is_subscribed')
+        model = User
+
+
 class RecipeSerializer(serializers.ModelSerializer):
     ingredients = IngredientCreateSerializer(
         required=True, many=True, read_only=False)
     image = ImageBase64Field()
+    author = CustomUserSerializer(required=False)
+
+    @transaction.atomic
+    def create(self, validated_data):
+        ingredients = validated_data.pop('ingredients')
+        tags = validated_data.pop('tags')
+
+        obj = Recipe.objects.create(**validated_data)
+        obj.save()
+
+        obj.tags.set(tags)
+
+        for ingredient in ingredients:
+            IngredientRecipeRelation.objects.create(
+                recipe=obj,
+                ingredient=ingredient['ingredient'],
+                amount=ingredient['amount']
+            ).save()
+
+        return obj
+
+    def to_representation(self, instance):
+        self.fields.pop('ingredients')
+        self.fields['tags'] = TagSerializer(many=True)
+
+        representation = super().to_representation(instance)
+
+        representation['ingredients'] = IngredientRecipeRelationSerializer(
+            IngredientRecipeRelation.objects.filter(
+                recipe=instance).all(), many=True).data
+
+        return representation
 
     class Meta:
         exclude = ('created', )

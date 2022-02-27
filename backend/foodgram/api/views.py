@@ -1,3 +1,4 @@
+from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, mixins, viewsets
 from rest_framework.permissions import AllowAny
@@ -44,3 +45,5 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
         return RecipeSerializer
 
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
