@@ -1,12 +1,13 @@
 import base64
 import mimetypes
 
+import djoser.serializers
 from django.contrib.auth import get_user_model
 from django.core.files.base import ContentFile
 from django.db import transaction
 from rest_framework import serializers
 
-from recipes.models import Ingredient, Recipe, Tag, IngredientRecipeRelation
+from recipes.models import Ingredient, IngredientRecipeRelation, Recipe, Tag
 
 User = get_user_model()
 
@@ -86,6 +87,16 @@ class CustomUserSerializer(serializers.ModelSerializer):
     class Meta:
         fields = ('id', 'email', 'username', 'first_name', 'last_name',
                   'is_subscribed')
+        model = User
+
+
+class CustomUserCreateSerializer(djoser.serializers.UserCreateSerializer):
+    id = serializers.PrimaryKeyRelatedField(
+        required=False, queryset=User.objects.all())
+
+    class Meta:
+        fields = ('id', 'email', 'username', 'first_name', 'last_name',
+                  'password')
         model = User
 
 

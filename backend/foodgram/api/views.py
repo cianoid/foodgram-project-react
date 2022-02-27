@@ -5,8 +5,7 @@ from rest_framework.permissions import AllowAny
 
 from api.filters import RecipeFilter
 from api.serializers import (IngredientSerializer, RecipeSerializer,
-                             RecipeSerializerList, TagSerializer,
-                             CustomUserSerializer)
+                             RecipeSerializerList, TagSerializer)
 from recipes.models import Ingredient, Recipe, Tag
 
 User = get_user_model()
@@ -50,10 +49,3 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
-
-
-class UserViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all()
-    serializer_class = CustomUserSerializer
-    # @TODO Check it
-    permission_classes = (AllowAny,)
