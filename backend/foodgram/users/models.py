@@ -16,5 +16,8 @@ class CustomUser(AbstractUser):
     is_subscribed = models.BooleanField(
         blank=True, default=False)
 
+    class Meta:
+        ordering = ('id', )
+
     def __str__(self):
         return f'{self.first_name} {self.last_name}'
