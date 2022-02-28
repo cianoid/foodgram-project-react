@@ -105,10 +105,6 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # Custom User Model
 AUTH_USER_MODEL = 'users.CustomUser'
 
-# Email
-EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
-EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent_emails')
-
 # DRF
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
