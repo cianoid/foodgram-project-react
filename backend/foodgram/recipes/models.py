@@ -88,3 +88,29 @@ class IngredientRecipeRelation(models.Model):
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
     ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
     amount = models.PositiveSmallIntegerField()
+
+
+class Subscription(BaseModel):
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='subscriptions')
+    author = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='subscripters')
+
+    class Meta:
+        ordering = ('id',)
+        constraints = [
+            models.UniqueConstraint(
+                fields=('author', 'user'), name='Unique subscription')
+        ]
+
+
+class ShoppingCart(BaseModel):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
+
+    class Meta:
+        ordering = ('id',)
+        constraints = [
+            models.UniqueConstraint(
+                fields=('recipe', 'user'), name='Unique cart')
+        ]
