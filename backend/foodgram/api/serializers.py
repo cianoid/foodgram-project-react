@@ -1,7 +1,6 @@
 import base64
 import mimetypes
 
-import djoser.serializers
 from django.contrib.auth import get_user_model
 from rest_framework.settings import api_settings
 from django.core.files.base import ContentFile
@@ -105,34 +104,10 @@ class CustomUserSerializer(serializers.ModelSerializer):
         model = User
 
 
-class CustomUserCreateSerializer(djoser.serializers.UserCreateSerializer):
-    id = serializers.PrimaryKeyRelatedField(
-        required=False, queryset=User.objects.all())
-
-    class Meta:
-        fields = ('id', 'email', 'username', 'first_name', 'last_name',
-                  'password')
-        model = User
-
-
 class RecipeShortSerilizer(serializers.ModelSerializer):
     class Meta:
         fields = ('id', 'image', 'name', 'cooking_time')
         model = Recipe
-
-
-class CustomUserForRecipeSerializer(serializers.ModelSerializer):
-    recipes = RecipeShortSerilizer(many=True)
-    is_subscribed = serializers.SerializerMethodField()
-
-    def get_is_subscribed(self, obj):
-        return Subscription.objects.filter(
-            author=obj, user=self.context['request'].user).exists()
-
-    class Meta:
-        fields = ('id', 'email', 'username', 'firts_name', 'last_name',
-                  'is_subscribed', 'recipes')
-        model = User
 
 
 class RecipeSerializer(serializers.ModelSerializer):
@@ -205,14 +180,3 @@ class SubscriptionListSerializer(serializers.ModelSerializer):
         fields = ('id', 'email', 'username', 'first_name', 'last_name',
                   'recipes', 'recipes_count')
         model = User
-
-
-class SubscriptionManageSerializer(serializers.ModelSerializer):
-    author = serializers.PrimaryKeyRelatedField(
-        required=False, queryset=User.objects.all())
-    user = serializers.PrimaryKeyRelatedField(
-        required=False, queryset=User.objects.all())
-
-    class Meta:
-        exclude = ('created', )
-        model = Subscription

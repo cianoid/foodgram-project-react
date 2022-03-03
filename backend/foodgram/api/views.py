@@ -1,11 +1,8 @@
 from django.contrib.auth import get_user_model
-from rest_framework.settings import api_settings
-from django.db import IntegrityError
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import (filters, generics, mixins, viewsets, permissions,
                             status)
-from rest_framework.validators import ValidationError
 from rest_framework.views import APIView, Response
 
 from api.filters import RecipeFilter
