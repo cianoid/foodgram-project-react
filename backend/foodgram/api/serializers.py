@@ -3,11 +3,14 @@ import mimetypes
 
 import djoser.serializers
 from django.contrib.auth import get_user_model
+from rest_framework.settings import api_settings
 from django.core.files.base import ContentFile
 from django.db import transaction
+from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 
-from recipes.models import Ingredient, IngredientRecipeRelation, Recipe, Tag
+from recipes.models import (Ingredient, IngredientRecipeRelation, Recipe,
+                            ShoppingCart, Subscription, Tag)
 
 User = get_user_model()
 
@@ -100,6 +103,22 @@ class CustomUserCreateSerializer(djoser.serializers.UserCreateSerializer):
         model = User
 
 
+class RecipeShortSerilizer(serializers.ModelSerializer):
+    class Meta:
+        fields = ('id', 'image', 'name', 'cooking_time')
+        model = Recipe
+
+
+class CustomUserForRecipeSerializer(serializers.ModelSerializer):
+    recipes = RecipeShortSerilizer(many=True)
+    # recipe_count =
+
+    class Meta:
+        fields = ('id', 'email', 'username', 'firts_name', 'last_name',
+                  'is_subscribed', 'recipes')
+        model = User
+
+
 class RecipeSerializer(serializers.ModelSerializer):
     ingredients = IngredientCreateSerializer(
         required=True, many=True, read_only=False)
@@ -140,3 +159,38 @@ class RecipeSerializer(serializers.ModelSerializer):
     class Meta:
         exclude = ('created', )
         model = Recipe
+
+
+class SubscriptionListSerializer(serializers.ModelSerializer):
+    recipes = serializers.SerializerMethodField()
+    recipes_count = serializers.SerializerMethodField()
+
+    def get_recipes(self, obj):
+        recipes_limit = int(self.context['request'].GET.get(
+            'recipes_limit', api_settings.PAGE_SIZE))
+
+        user = get_object_or_404(User, pk=obj.pk)
+        recipes = Recipe.objects.filter(author=user)[:recipes_limit]
+
+        return RecipeShortSerilizer(recipes, many=True).data
+
+    def get_recipes_count(self, obj):
+        user = get_object_or_404(User, pk=obj.pk)
+
+        return Recipe.objects.filter(author=user).count()
+
+    class Meta:
+        fields = ('id', 'email', 'username', 'first_name', 'last_name',
+                  'is_subscribed', 'recipes', 'recipes_count')
+        model = User
+
+
+class SubscriptionManageSerializer(serializers.ModelSerializer):
+    author = serializers.PrimaryKeyRelatedField(
+        required=False, queryset=User.objects.all())
+    user = serializers.PrimaryKeyRelatedField(
+        required=False, queryset=User.objects.all())
+
+    class Meta:
+        exclude = ('created', )
+        model = Subscription
