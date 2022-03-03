@@ -4,6 +4,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import (filters, generics, mixins, viewsets, permissions,
                             status)
 from rest_framework.views import APIView, Response
+from rest_framework.decorators import api_view, permission_classes
 
 from api.filters import RecipeFilter
 from api.serializers import (IngredientSerializer, RecipeSerializer,
@@ -105,3 +106,45 @@ class ListFollowViewSet(generics.ListAPIView):
     def get_queryset(self):
         user = self.request.user
         return User.objects.filter(subscripters__user=user)
+
+
+@api_view(['GET'])
+@permission_classes([permissions.IsAuthenticated])
+def download_shopping_cart(request):
+    return Response({}, status=status.HTTP_200_OK)
+
+
+class ShoppingCartManageView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+        pk = kwargs.get('pk', None)
+
+        recipe = get_object_or_404(Recipe, pk=pk)
+        user = request.user
+
+        if ShoppingCart.objects.filter(recipe=recipe, user=user).exists():
+            return Response(
+                {'errors': 'Этот рецепт уже в вашем списке покупок'},
+                status=status.HTTP_400_BAD_REQUEST)
+
+        obj = ShoppingCart(recipe=recipe, user=user)
+        obj.save()
+
+        serializer = RecipeShortSerilizer(recipe)
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def delete(self, request, *args, **kwargs):
+        pk = kwargs.get('pk', None)
+
+        recipe = get_object_or_404(Recipe, id=pk)
+
+        try:
+            ShoppingCart.objects.get(recipe=recipe, user=request.user).delete()
+        except ShoppingCart.DoesNotExist:
+            return Response(
+                {'errors': 'Этого рецепта нет в вашем списке покупок'},
+                status=status.HTTP_400_BAD_REQUEST)
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
