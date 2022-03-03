@@ -16,6 +16,12 @@ User = get_user_model()
 
 
 class AuthorSerializer(serializers.ModelSerializer):
+    is_subscribed = serializers.SerializerMethodField()
+
+    def get_is_subscribed(self, obj):
+        return Subscription.objects.filter(
+            author=obj, user=self.context['request'].user).exists()
+
     class Meta:
         fields = (
             'id', 'email', 'username', 'first_name', 'last_name',
@@ -87,6 +93,12 @@ class ImageBase64Field(serializers.ImageField):
 
 
 class CustomUserSerializer(serializers.ModelSerializer):
+    is_subscribed = serializers.SerializerMethodField()
+
+    def get_is_subscribed(self, obj):
+        return Subscription.objects.filter(
+            author=obj, user=self.context['request'].user).exists()
+
     class Meta:
         fields = ('id', 'email', 'username', 'first_name', 'last_name',
                   'is_subscribed')
@@ -111,7 +123,11 @@ class RecipeShortSerilizer(serializers.ModelSerializer):
 
 class CustomUserForRecipeSerializer(serializers.ModelSerializer):
     recipes = RecipeShortSerilizer(many=True)
-    # recipe_count =
+    is_subscribed = serializers.SerializerMethodField()
+
+    def get_is_subscribed(self, obj):
+        return Subscription.objects.filter(
+            author=obj, user=self.context['request'].user).exists()
 
     class Meta:
         fields = ('id', 'email', 'username', 'firts_name', 'last_name',
@@ -179,9 +195,15 @@ class SubscriptionListSerializer(serializers.ModelSerializer):
 
         return Recipe.objects.filter(author=user).count()
 
+    is_subscribed = serializers.SerializerMethodField()
+
+    def get_is_subscribed(self, obj):
+        return Subscription.objects.filter(
+            author=obj, user=self.context['request'].user).exists()
+
     class Meta:
         fields = ('id', 'email', 'username', 'first_name', 'last_name',
-                  'is_subscribed', 'recipes', 'recipes_count')
+                  'recipes', 'recipes_count')
         model = User
 
 
