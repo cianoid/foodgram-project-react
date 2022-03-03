@@ -13,8 +13,6 @@ class CustomUser(AbstractUser):
         'Имя', max_length=150)
     last_name = models.CharField(
         'Фамилия', max_length=150)
-    is_subscribed = models.BooleanField(
-        blank=True, default=False)
 
     class Meta:
         ordering = ('id', )
