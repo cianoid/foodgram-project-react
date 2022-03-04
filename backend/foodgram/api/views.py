@@ -1,4 +1,7 @@
+import csv
+
 from django.contrib.auth import get_user_model
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import (filters, generics, mixins, viewsets, permissions,
@@ -10,7 +13,8 @@ from api.filters import RecipeFilter
 from api.serializers import (IngredientSerializer, RecipeSerializer,
                              RecipeSerializerList, RecipeShortSerilizer,
                              SubscriptionListSerializer, TagSerializer)
-from recipes.models import Ingredient, Recipe, ShoppingCart, Subscription, Tag
+from recipes.models import (Ingredient, IngredientRecipeRelation, Recipe,
+                            ShoppingCart, Subscription, Tag)
 
 User = get_user_model()
 
@@ -111,7 +115,36 @@ class ListFollowViewSet(generics.ListAPIView):
 @api_view(['GET'])
 @permission_classes([permissions.IsAuthenticated])
 def download_shopping_cart(request):
-    return Response({}, status=status.HTTP_200_OK)
+    recipes = request.user.shopping_cart.all().values('recipe_id')
+    ingredients = IngredientRecipeRelation.objects.filter(recipe__in=recipes)
+
+    if not ingredients:
+        return Response(
+            {'errors': 'Ваш список для покупок пустой'},
+            status=status.HTTP_204_NO_CONTENT)
+
+    total_ingredients = {}
+
+    # @TODO изучить функции агрегирования
+    for ingredient in ingredients:
+        ing = ingredient.ingredient
+
+        try:
+            total_ingredients[ing.pk][1] += ingredient.amount
+        except KeyError:
+            total_ingredients[ing.pk] = [
+                ing.name,
+                ingredient.amount,
+                ing.measurement_unit]
+
+    response = HttpResponse(content_type='text/csv', status=status.HTTP_200_OK)
+    response['Content-Disposition'] = 'attachment; filename="shoppingcart.csv"'
+
+    writer = csv.writer(response)
+    for ingredient in total_ingredients.values():
+        writer.writerow(ingredient)
+
+    return response
 
 
 class ShoppingCartManageView(APIView):
