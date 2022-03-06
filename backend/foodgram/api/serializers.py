@@ -140,12 +140,30 @@ class RecipeSerializer(serializers.ModelSerializer):
 
         for ingredient in ingredients:
             IngredientRecipeRelation.objects.create(
-                recipe=obj,
-                ingredient=ingredient['ingredient'],
+                recipe=obj, ingredient=ingredient['ingredient'],
                 amount=ingredient['amount']
             ).save()
 
         return obj
+
+    @transaction.atomic
+    def update(self, instance, validated_data):
+        ingredients = validated_data.pop('ingredients')
+        tags = validated_data.pop('tags')
+
+        for field, value in validated_data.items():
+            setattr(instance, field, value)
+
+        instance.tags.set(tags)
+
+        instance.ingredients.clear()
+        for ingredient in ingredients:
+            IngredientRecipeRelation.objects.create(
+                recipe=instance, ingredient=ingredient['ingredient'],
+                amount=ingredient['amount']
+            ).save()
+
+        return super().update(instance, validated_data)
 
     def to_representation(self, instance):
         self.fields.pop('ingredients')
