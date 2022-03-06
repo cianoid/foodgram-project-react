@@ -5,6 +5,7 @@ from django.contrib.auth import get_user_model
 from django.core.files.base import ContentFile
 from django.db import transaction
 from django.shortcuts import get_object_or_404
+import djoser.serializers
 from rest_framework import serializers
 from rest_framework.settings import api_settings
 
@@ -12,6 +13,16 @@ from recipes.models import (Favorite, Ingredient, IngredientRecipeRelation,
                             Recipe, ShoppingCart, Subscription, Tag)
 
 User = get_user_model()
+
+
+class CustomUserCreateSerializer(djoser.serializers.UserCreateSerializer):
+    id = serializers.PrimaryKeyRelatedField(
+        required=False, queryset=User.objects.all())
+
+    class Meta:
+        fields = ('id', 'email', 'username', 'first_name', 'last_name',
+                  'password')
+        model = User
 
 
 class AuthorSerializer(serializers.ModelSerializer):

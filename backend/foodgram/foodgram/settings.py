@@ -129,12 +129,11 @@ DJOSER = {
         'set_username': ['rest_framework.permissions.IsAdminUser'],
         'user_delete': ['rest_framework.permissions.IsAdminUser'],
 
-        # @TODO изменить на свои пермишены - сам юзер или админ
         'set_password': ['rest_framework.permissions.IsAuthenticated'],
-        'user_create': ['rest_framework.permissions.AllowAny'],
+        'user_create': ['api.permissions.AnonymousOnly'],
         'user': ['rest_framework.permissions.IsAuthenticated'],
         'user_list': ['rest_framework.permissions.AllowAny'],
-        'token_create': ['rest_framework.permissions.AllowAny'],
+        'token_create': ['api.permissions.AnonymousOnly'],
         'token_destroy': ['rest_framework.permissions.IsAuthenticated'],
     },
     'SERIALIZERS': {
