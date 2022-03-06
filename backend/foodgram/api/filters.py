@@ -9,4 +9,4 @@ class RecipeFilter(django_filters.FilterSet):
 
     class Meta:
         model = Recipe
-        fields = ('author', 'tags', 'is_in_shopping_cart', 'is_favorited')
+        fields = ('author', 'tags', )
