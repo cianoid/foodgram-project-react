@@ -1,5 +1,3 @@
-import csv
-
 from django.contrib.auth import get_user_model
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
@@ -13,6 +11,7 @@ from api.filters import RecipeFilter
 from api.serializers import (IngredientSerializer, RecipeSerializer,
                              RecipeSerializerList, RecipeShortSerilizer,
                              SubscriptionListSerializer, TagSerializer)
+from core import pdf
 from recipes.models import (Ingredient, IngredientRecipeRelation, Recipe,
                             ShoppingCart, Subscription, Tag)
 
@@ -112,6 +111,34 @@ class ListFollowViewSet(generics.ListAPIView):
         return User.objects.filter(subscripters__user=user)
 
 
+def make_pdf(header, data, filename, http_status):
+    site_name = 'SITE_NAME'
+
+    pdf_data = [
+        (pdf.Constant.DT_CAPTION, 'Мой список покупок:'),
+        (pdf.Constant.DT_EMPTYLINE, '')
+    ]
+
+    for ingredient in data.values():
+        pdf_data.append((
+            pdf.Constant.DT_TEXT,
+            f'□ {ingredient[0]} - {ingredient[1]} {ingredient[2]}'))
+
+    pdf_obj = pdf.PDFMaker()
+    pdf_obj.data = pdf_data
+    pdf_obj.footer_text = f'Список покупок сгенерирован на сайте {site_name}'
+
+    content = pdf_obj.pdf_render()
+
+    response = HttpResponse(
+        content=content,
+        content_type='application/pdf',
+        status=http_status)
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
+
+    return response
+
+
 @api_view(['GET'])
 @permission_classes([permissions.IsAuthenticated])
 def download_shopping_cart(request):
@@ -137,14 +164,12 @@ def download_shopping_cart(request):
                 ingredient.amount,
                 ing.measurement_unit]
 
-    response = HttpResponse(content_type='text/csv', status=status.HTTP_200_OK)
-    response['Content-Disposition'] = 'attachment; filename="shoppingcart.csv"'
-
-    writer = csv.writer(response)
-    for ingredient in total_ingredients.values():
-        writer.writerow(ingredient)
-
-    return response
+    return make_pdf(
+        ('Наименование', 'Количество', 'Ед.измерения'),
+        total_ingredients,
+        'shoppingcart.pdf',
+        status.HTTP_200_OK
+    )
 
 
 class ShoppingCartManageView(APIView):
