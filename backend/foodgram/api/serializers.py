@@ -8,8 +8,8 @@ from django.db import transaction
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 
-from recipes.models import (Ingredient, IngredientRecipeRelation, Recipe,
-                            ShoppingCart, Subscription, Tag)
+from recipes.models import (Ingredient, IngredientRecipeRelation, Favorite,
+                            Recipe, ShoppingCart, Subscription, Tag)
 
 User = get_user_model()
 
@@ -59,12 +59,15 @@ class RecipeSerializerList(serializers.ModelSerializer):
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
 
-    def get_is_in_shopping_cart(self, obj):
-        return ShoppingCart.objects.filter(
+    def __is_something(self, obj, model):
+        return model.objects.filter(
             recipe=obj, user=self.context['request'].user).exists()
 
+    def get_is_in_shopping_cart(self, obj):
+        return self.__is_something(obj, ShoppingCart)
+
     def get_is_favorited(self, obj):
-        return True
+        return self.__is_something(obj, Favorite)
 
     def get_ingredients(self, obj):
         return IngredientRecipeRelationSerializer(

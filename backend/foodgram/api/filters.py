@@ -8,14 +8,20 @@ class RecipeFilter(django_filters.FilterSet):
         field_name='tags', lookup_expr='slug')
     is_in_shopping_cart = django_filters.BooleanFilter(
         field_name='is_in_shopping_cart', method='filter_is_in_shopping_cart')
+    is_favorited = django_filters.BooleanFilter(
+        field_name='is_favorited', method='filter_is_favorited')
 
-    def filter_is_in_shopping_cart(self, queryset, name, value):
-        recipes = queryset.filter(pk__in=[
-            cart_item.recipe.pk
-            for cart_item
-            in self.request.user.shopping_cart.all()])
+    def __is_something(self, queryset, name, value, related_field):
+        objects = getattr(self.request.user, related_field).all()
+        recipes = queryset.filter(pk__in=[item.recipe.pk for item in objects])
 
         return recipes
+
+    def filter_is_in_shopping_cart(self, queryset, name, value):
+        return self.__is_something(queryset, name, value, 'shopping_cart')
+
+    def filter_is_favorited(self, queryset, name, value):
+        return self.__is_something(queryset, name, value, 'favorites')
 
     class Meta:
         model = Recipe
