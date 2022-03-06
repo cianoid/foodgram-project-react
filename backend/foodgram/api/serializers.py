@@ -2,13 +2,13 @@ import base64
 import mimetypes
 
 from django.contrib.auth import get_user_model
-from rest_framework.settings import api_settings
 from django.core.files.base import ContentFile
 from django.db import transaction
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
+from rest_framework.settings import api_settings
 
-from recipes.models import (Ingredient, IngredientRecipeRelation, Favorite,
+from recipes.models import (Favorite, Ingredient, IngredientRecipeRelation,
                             Recipe, ShoppingCart, Subscription, Tag)
 
 User = get_user_model()

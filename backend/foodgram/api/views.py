@@ -2,10 +2,10 @@ from django.contrib.auth import get_user_model
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import (filters, generics, mixins, viewsets, permissions,
-                            status)
-from rest_framework.views import APIView, Response
+from rest_framework import (filters, generics, mixins, permissions, status,
+                            viewsets)
 from rest_framework.decorators import api_view, permission_classes
+from rest_framework.views import APIView, Response
 
 from api.filters import RecipeFilter
 from api.pagination import CustomPageNumberPagination
@@ -13,7 +13,7 @@ from api.serializers import (IngredientSerializer, RecipeSerializer,
                              RecipeSerializerList, RecipeShortSerilizer,
                              SubscriptionListSerializer, TagSerializer)
 from core import pdf
-from recipes.models import (Ingredient, IngredientRecipeRelation, Favorite,
+from recipes.models import (Favorite, Ingredient, IngredientRecipeRelation,
                             Recipe, ShoppingCart, Subscription, Tag)
 
 User = get_user_model()
