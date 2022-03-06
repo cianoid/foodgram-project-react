@@ -13,8 +13,8 @@ from api.serializers import (IngredientSerializer, RecipeSerializer,
                              RecipeSerializerList, RecipeShortSerilizer,
                              SubscriptionListSerializer, TagSerializer)
 from core import pdf
-from recipes.models import (Ingredient, IngredientRecipeRelation, Recipe,
-                            ShoppingCart, Subscription, Tag)
+from recipes.models import (Ingredient, IngredientRecipeRelation, Favorite,
+                            Recipe, ShoppingCart, Subscription, Tag)
 
 User = get_user_model()
 
@@ -176,6 +176,11 @@ def download_shopping_cart(request):
 
 class ShoppingCartManageView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
+    main_model = ShoppingCart
+    err_messages = {
+        'recipe_not_in_list': 'Этого рецепта нет в вашем списке покупок',
+        'recipe_in_list': 'Этот рецепт уже в вашем списке покупок'
+    }
 
     def post(self, request, *args, **kwargs):
         pk = kwargs.get('pk', None)
@@ -183,12 +188,12 @@ class ShoppingCartManageView(APIView):
         recipe = get_object_or_404(Recipe, pk=pk)
         user = request.user
 
-        if ShoppingCart.objects.filter(recipe=recipe, user=user).exists():
+        if self.main_model.objects.filter(recipe=recipe, user=user).exists():
             return Response(
-                {'errors': 'Этот рецепт уже в вашем списке покупок'},
+                {'errors': self.err_messages['recipe_in_list']},
                 status=status.HTTP_400_BAD_REQUEST)
 
-        obj = ShoppingCart(recipe=recipe, user=user)
+        obj = self.main_model(recipe=recipe, user=user)
         obj.save()
 
         serializer = RecipeShortSerilizer(recipe)
@@ -201,10 +206,19 @@ class ShoppingCartManageView(APIView):
         recipe = get_object_or_404(Recipe, id=pk)
 
         try:
-            ShoppingCart.objects.get(recipe=recipe, user=request.user).delete()
-        except ShoppingCart.DoesNotExist:
+            self.main_model.objects.get(
+                recipe=recipe, user=request.user).delete()
+        except self.main_model.DoesNotExist:
             return Response(
-                {'errors': 'Этого рецепта нет в вашем списке покупок'},
+                {'errors': self.err_messages['recipe_not_in_list']},
                 status=status.HTTP_400_BAD_REQUEST)
 
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class FavoriteManageView(ShoppingCartManageView):
+    main_model = Favorite
+    err_messages = {
+        'recipe_not_in_list': 'Этого рецепта нет в вашем избранном',
+        'recipe_in_list': 'Этот рецепт уже в вашем избранном'
+    }
