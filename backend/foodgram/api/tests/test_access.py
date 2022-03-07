@@ -58,17 +58,14 @@ class APITests(APITestCase, URLPatternsTestCase):
             (status.HTTP_200_OK, 'get'): (
                 reverse('api:customuser-list'),
                 reverse('api:tags-list'),
-                reverse('api:tags-detail', kwargs={'pk': self.tag.pk}),
+                reverse('api:tags-detail', args=(self.tag.pk,)),
                 reverse('api:recipes-list'),
-                reverse(
-                    'api:recipes-detail', kwargs={'pk': self.recipe.pk}),
+                reverse('api:recipes-detail', args=(self.recipe.pk,)),
                 reverse('api:ingredients-list'),
-                reverse(
-                    'api:ingredients-detail',
-                    kwargs={'pk': self.ingredient.pk}),
+                reverse('api:ingredients-detail', args=(self.ingredient.pk,)),
             ),
             (status.HTTP_401_UNAUTHORIZED, 'get'): (
-                reverse('api:customuser-detail', kwargs={'id': self.user.pk}),
+                reverse('api:customuser-detail', args=(self.user.pk,)),
                 reverse('api:customuser-me'),
                 reverse('api:download_shopping_cart'),
                 reverse('api:subscriptions'),
@@ -82,26 +79,24 @@ class APITests(APITestCase, URLPatternsTestCase):
                 reverse('api:customuser-set-password'),
                 reverse('api:logout'),
                 reverse('api:recipes-list'),
-                reverse('api:shopping_cart', kwargs={'pk': self.recipe.pk}),
-                reverse('api:favorites', kwargs={'pk': self.recipe.pk}),
-                reverse('api:subscribe', kwargs={'pk': self.user_follower.pk}),
+                reverse('api:shopping_cart', args=(self.recipe.pk,)),
+                reverse('api:favorites', args=(self.recipe.pk,)),
+                reverse('api:subscribe', args=(self.user_follower.pk,)),
 
             ),
             (status.HTTP_401_UNAUTHORIZED, 'patch'): (
-                reverse(
-                    'api:recipes-detail', kwargs={'pk': self.recipe.pk}),
+                reverse('api:recipes-detail', args=(self.recipe.pk,)),
             ),
             (status.HTTP_401_UNAUTHORIZED, 'delete'): (
-                reverse(
-                    'api:recipes-detail', kwargs={'pk': self.recipe.pk}),
-                reverse('api:shopping_cart', kwargs={'pk': self.recipe.pk}),
-                reverse('api:favorites', kwargs={'pk': self.recipe.pk}),
-                reverse('api:subscribe', kwargs={'pk': self.user_follower.pk}),
+                reverse('api:recipes-detail', args=(self.recipe.pk,)),
+                reverse('api:shopping_cart', args=(self.recipe.pk,)),
+                reverse('api:favorites', args=(self.recipe.pk,)),
+                reverse('api:subscribe', args=(self.user_follower.pk,)),
             ),
             (status.HTTP_404_NOT_FOUND, 'get'): (
-                reverse('api:recipes-detail', kwargs={'pk': 10000}),
-                reverse('api:tags-detail', kwargs={'pk': 10000}),
-                reverse('api:ingredients-detail', kwargs={'pk': 10000}),
+                reverse('api:recipes-detail', args=(10000,)),
+                reverse('api:tags-detail', args=(10000,)),
+                reverse('api:ingredients-detail', args=(10000,)),
             ),
         }
 
@@ -118,18 +113,15 @@ class APITests(APITestCase, URLPatternsTestCase):
         endpoints_dict = {
             (status.HTTP_200_OK, 'get'): (
                 reverse('api:customuser-list'),
-                reverse('api:customuser-detail', kwargs={'id': self.user.pk}),
+                reverse('api:customuser-detail', args=(self.user.pk,)),
                 reverse('api:customuser-me'),
                 reverse('api:tags-list'),
-                reverse('api:tags-detail', kwargs={'pk': self.tag.pk}),
+                reverse('api:tags-detail', args=(self.tag.pk,)),
                 reverse('api:recipes-list'),
-                reverse(
-                    'api:recipes-detail', kwargs={'pk': self.recipe.pk}),
+                reverse('api:recipes-detail', args=(self.recipe.pk,)),
                 reverse('api:subscriptions'),
                 reverse('api:ingredients-list'),
-                reverse(
-                    'api:ingredients-detail',
-                    kwargs={'pk': self.ingredient.pk}),
+                reverse('api:ingredients-detail', args=(self.ingredient.pk,)),
             ),
             (status.HTTP_400_BAD_REQUEST, 'post'): (
                 reverse('api:customuser-set-password'),
@@ -139,30 +131,25 @@ class APITests(APITestCase, URLPatternsTestCase):
                 reverse('api:download_shopping_cart'),
             ),
             (status.HTTP_201_CREATED, 'post'): (
-                reverse('api:favorites', kwargs={'pk': self.recipe.pk}),
-                reverse('api:subscribe', kwargs={'pk': self.user_follower.pk}),
-                reverse('api:shopping_cart', kwargs={'pk': self.recipe.pk}),
+                reverse('api:favorites', args=(self.recipe.pk,)),
+                reverse('api:subscribe', args=(self.user_follower.pk,)),
+                reverse('api:shopping_cart', args=(self.recipe.pk,)),
             ),
             (status.HTTP_400_BAD_REQUEST, 'patch'): (
                 reverse(
-                    'api:recipes-detail', kwargs={'pk': self.recipe.pk}),
+                    'api:recipes-detail', args=(self.recipe.pk,)),
             ),
             (status.HTTP_403_FORBIDDEN, 'patch'): (
-                reverse(
-                    'api:recipes-detail',
-                    kwargs={'pk': self.recipe_follower.pk}),
+                reverse('api:recipes-detail', args=(self.recipe_follower.pk,)),
             ),
             (status.HTTP_403_FORBIDDEN, 'delete'): (
-                reverse(
-                    'api:recipes-detail',
-                    kwargs={'pk': self.recipe_follower.pk}),
+                reverse('api:recipes-detail', args=(self.recipe_follower.pk,)),
             ),
             (status.HTTP_204_NO_CONTENT, 'delete'): (
-                reverse(
-                    'api:recipes-detail', kwargs={'pk': self.recipe.pk}),
-                reverse('api:shopping_cart', kwargs={'pk': self.recipe.pk}),
-                reverse('api:favorites', kwargs={'pk': self.recipe.pk}),
-                reverse('api:subscribe', kwargs={'pk': self.user_follower.pk}),
+                reverse('api:recipes-detail', args=(self.recipe.pk,)),
+                reverse('api:shopping_cart', args=(self.recipe.pk,)),
+                reverse('api:favorites', args=(self.recipe.pk,)),
+                reverse('api:subscribe', args=(self.user_follower.pk,)),
             ),
             (status.HTTP_403_FORBIDDEN, 'post'): (
                 reverse('api:login'),
@@ -172,14 +159,14 @@ class APITests(APITestCase, URLPatternsTestCase):
                 reverse('api:logout'),
             ),
             (status.HTTP_404_NOT_FOUND, 'get'): (
-                reverse('api:recipes-detail', kwargs={'pk': 10000}),
-                reverse('api:tags-detail', kwargs={'pk': 10000}),
-                reverse('api:ingredients-detail', kwargs={'pk': 10000}),
+                reverse('api:recipes-detail', args=(10000,)),
+                reverse('api:tags-detail', args=(10000,)),
+                reverse('api:ingredients-detail', args=(10000,)),
             ),
             (status.HTTP_404_NOT_FOUND, 'post'): (
-                reverse('api:shopping_cart', kwargs={'pk': 10000}),
-                reverse('api:favorites', kwargs={'pk': 10000}),
-                reverse('api:subscribe', kwargs={'pk': 10000}),
+                reverse('api:shopping_cart', args=(10000,)),
+                reverse('api:favorites', args=(10000,)),
+                reverse('api:subscribe', args=(10000,)),
             ),
         }
 

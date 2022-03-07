@@ -53,7 +53,7 @@ class APITests(APITestCase, URLPatternsTestCase):
         self.assertEqual(len(response.data), Tag.objects.all().count())
 
     def __tag_detail(self, apiclient):
-        endpoint = reverse('api:tags-detail', kwargs={'pk': self.tag.pk})
+        endpoint = reverse('api:tags-detail', args=(self.tag.pk,))
 
         response = apiclient.get(endpoint)
         self.assertEqual(response.status_code, status.HTTP_200_OK)

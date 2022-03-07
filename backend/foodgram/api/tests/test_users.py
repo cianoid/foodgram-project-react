@@ -125,7 +125,7 @@ class APITests(APITestCase, URLPatternsTestCase):
         """Неавторизованные пользователи. Профиль пользователя."""
 
         endpoint = reverse(
-            'api:customuser-detail', kwargs={'id': self.user.pk})
+            'api:customuser-detail', args=(self.user.pk,))
 
         response = self.anon_client.get(endpoint)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
@@ -175,7 +175,7 @@ class APITests(APITestCase, URLPatternsTestCase):
         """Авторизованные пользователи. Профиль пользователя."""
 
         endpoint = reverse(
-            'api:customuser-detail', kwargs={'id': self.user.pk})
+            'api:customuser-detail', args=(self.user.pk,))
 
         response = self.user_client.get(endpoint)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
