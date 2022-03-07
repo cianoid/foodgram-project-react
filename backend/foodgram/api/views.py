@@ -9,6 +9,7 @@ from rest_framework.views import APIView, Response
 
 from api.filters import RecipeFilter
 from api.pagination import CustomPageNumberPagination
+from api.permissions import RecipePermissions
 from api.serializers import (IngredientSerializer, RecipeSerializer,
                              RecipeSerializerList, RecipeShortSerilizer,
                              SubscriptionListSerializer, TagSerializer)
@@ -44,8 +45,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
 
-    # @TODO Check it
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (RecipePermissions,)
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter
     pagination_class = CustomPageNumberPagination

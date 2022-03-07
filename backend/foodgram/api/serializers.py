@@ -231,5 +231,5 @@ class SubscriptionListSerializer(serializers.ModelSerializer):
 
     class Meta:
         fields = ('id', 'email', 'username', 'first_name', 'last_name',
-                  'recipes', 'recipes_count')
+                  'is_subscribed','recipes', 'recipes_count')
         model = User
