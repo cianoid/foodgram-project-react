@@ -144,3 +144,7 @@ DJOSER = {
     },
     'HIDE_USERS': False
 }
+
+FIXTURE_DIRS = (
+    os.path.join(BASE_DIR, 'api/tests/fixtures/'),
+)
