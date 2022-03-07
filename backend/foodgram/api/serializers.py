@@ -71,6 +71,9 @@ class RecipeSerializerList(serializers.ModelSerializer):
     is_in_shopping_cart = serializers.SerializerMethodField()
 
     def __is_something(self, obj, model):
+        if not self.context['request'].user.is_authenticated:
+            return False
+
         return model.objects.filter(
             recipe=obj, user=self.context['request'].user).exists()
 
@@ -118,6 +121,9 @@ class CustomUserSerializer(serializers.ModelSerializer):
     is_subscribed = serializers.SerializerMethodField()
 
     def get_is_subscribed(self, obj):
+        if not self.context['request'].user.is_authenticated:
+            return False
+
         return Subscription.objects.filter(
             author=obj, user=self.context['request'].user).exists()
 
@@ -214,6 +220,9 @@ class SubscriptionListSerializer(serializers.ModelSerializer):
     is_subscribed = serializers.SerializerMethodField()
 
     def get_is_subscribed(self, obj):
+        if not self.context['request'].user.is_authenticated:
+            return False
+
         return Subscription.objects.filter(
             author=obj, user=self.context['request'].user).exists()
 
