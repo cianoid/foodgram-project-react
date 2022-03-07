@@ -12,6 +12,9 @@ class RecipeFilter(django_filters.FilterSet):
         field_name='is_favorited', method='filter_is_favorited')
 
     def __is_something(self, queryset, name, value, related_field):
+        if self.request.user.is_anonymous:
+            return Recipe.objects.none()
+
         objects = getattr(self.request.user, related_field).all()
         recipes = queryset.filter(pk__in=[item.recipe.pk for item in objects])
 
