@@ -35,7 +35,8 @@ class APITests(APITestCase, URLPatternsTestCase):
         cls.tag = get_object_or_404(Tag, pk=1)
         cls.ingredient = get_object_or_404(Ingredient, pk=802)
         cls.recipe = get_object_or_404(Recipe, pk=1)
-        cls.recipe_follower = get_object_or_404(Recipe, pk=3)
+        cls.recipe_follower = get_object_or_404(
+            Recipe, author=cls.user_follower)
 
     @classmethod
     def tearDownClass(cls):
