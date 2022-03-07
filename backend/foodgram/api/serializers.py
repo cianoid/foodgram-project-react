@@ -29,6 +29,9 @@ class AuthorSerializer(serializers.ModelSerializer):
     is_subscribed = serializers.SerializerMethodField()
 
     def get_is_subscribed(self, obj):
+        if not self.context['request'].user.is_authenticated:
+            return False
+
         return Subscription.objects.filter(
             author=obj, user=self.context['request'].user).exists()
 
