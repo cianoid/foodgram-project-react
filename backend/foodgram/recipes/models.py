@@ -55,7 +55,7 @@ class Ingredient(models.Model):
 class Recipe(BaseModel):
     """Модель рецептов."""
     author = models.ForeignKey(
-        User, verbose_name='Автор рецепта', on_delete=models.PROTECT,
+        User, verbose_name='Автор рецепта', on_delete=models.CASCADE,
         related_name='recipes', )
     image = ImageField(
         'Картинка', upload_to=upload_to, blank=False)
@@ -64,7 +64,7 @@ class Recipe(BaseModel):
     text = models.TextField(
         'Описание рецепта')
     cooking_time = models.PositiveSmallIntegerField(
-        'Время приготовления', validators=(MinValueValidator,))
+        'Время приготовления', validators=(MinValueValidator(1),))
     tags = models.ManyToManyField(
         Tag, verbose_name='Теги', related_name='recipes')
     ingredients = models.ManyToManyField(
@@ -81,46 +81,80 @@ class Recipe(BaseModel):
 
 
 class IngredientRecipeRelation(models.Model):
-    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
-    ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
-    amount = models.PositiveSmallIntegerField()
+    recipe = models.ForeignKey(
+        Recipe, on_delete=models.CASCADE, verbose_name='Рецепт')
+    ingredient = models.ForeignKey(
+        Ingredient, on_delete=models.PROTECT, verbose_name='Пользователь')
+    amount = models.PositiveSmallIntegerField(
+        'Количество', validators=(MinValueValidator(1),))
+
+    def __str__(self):
+        return '{} ({})'.format(self.ingredient.name, self.recipe.name)
 
 
 class Subscription(BaseModel):
     user = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='subscriptions')
+        User, on_delete=models.CASCADE, related_name='subscriptions',
+        verbose_name='Пользователь')
     author = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='subscripters')
+        User, on_delete=models.CASCADE, related_name='subscripters',
+        verbose_name='Автор')
 
     class Meta:
         ordering = ('id',)
+        verbose_name = 'подписка'
+        verbose_name_plural = 'подписки'
         constraints = [
             models.UniqueConstraint(
                 fields=('author', 'user'), name='Unique subscription')
         ]
 
+    def __str__(self):
+        return '\'{} {}\' подписан на \'{} {}\''.format(
+            self.user.first_name, self.user.last_name, self.author.first_name,
+            self.author.last_name
+        )
+
 
 class ShoppingCart(BaseModel):
     user = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='shopping_cart')
-    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
+        User, on_delete=models.CASCADE, related_name='shopping_cart',
+        verbose_name='Пользователь')
+    recipe = models.ForeignKey(
+        Recipe, on_delete=models.CASCADE, verbose_name='Рецепт')
 
     class Meta:
         ordering = ('id',)
+        verbose_name = 'список покупок'
+        verbose_name_plural = 'список покупок'
         constraints = [
             models.UniqueConstraint(
                 fields=('recipe', 'user'), name='Unique cart')
         ]
 
+    def __str__(self):
+        return 'Рецепт \'{}\' в списке покупок \'{} {}\''.format(
+            self.recipe.name, self.user.first_name, self.user.last_name
+        )
+
 
 class Favorite(BaseModel):
     user = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='favorites')
-    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
+        User, on_delete=models.CASCADE, related_name='favorites',
+        verbose_name='Пользователь')
+    recipe = models.ForeignKey(
+        Recipe, on_delete=models.CASCADE, verbose_name='Рецепт')
 
     class Meta:
         ordering = ('id',)
+        verbose_name = 'избранное'
+        verbose_name_plural = 'избранное'
         constraints = [
             models.UniqueConstraint(
                 fields=('recipe', 'user'), name='Unique favorite')
         ]
+
+    def __str__(self):
+        return 'Рецепт \'{}\' в избранном \'{} {}\''.format(
+            self.recipe.name, self.user.first_name, self.user.last_name
+        )
