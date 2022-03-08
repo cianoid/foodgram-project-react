@@ -52,6 +52,15 @@ class APITests(APITestCase, URLPatternsTestCase):
         self.user_client = APIClient()
         self.user_client.force_authenticate(user=self.user)
 
+    def __launch_tests(self, endpoints_dict, apiclient):
+        for http_data, endpoints in endpoints_dict.items():
+            http_status, method = http_data
+
+            for endpoint in endpoints:
+                with self.subTest(method=method, endpoint=endpoint):
+                    response = getattr(apiclient, method)(endpoint)
+                    self.assertEqual(response.status_code, http_status)
+
     def test_anon_endpoint_access(self):
         """Неавторизованные пользователи. Доступ к ресурсам API."""
 
@@ -101,12 +110,7 @@ class APITests(APITestCase, URLPatternsTestCase):
             ),
         }
 
-        for http_data, endpoints in endpoints_dict.items():
-            http_status, method = http_data
-            for endpoint in endpoints:
-                with self.subTest(method=method, endpoint=endpoint):
-                    response = getattr(self.anon_client, method)(endpoint)
-                    self.assertEqual(response.status_code, http_status)
+        self.__launch_tests(endpoints_dict, self.anon_client)
 
     def test_user_endpoint_access(self):
         """Авторизованные пользователи. Доступ к ресурсам API."""
@@ -171,9 +175,4 @@ class APITests(APITestCase, URLPatternsTestCase):
             ),
         }
 
-        for http_data, endpoints in endpoints_dict.items():
-            http_status, method = http_data
-            for endpoint in endpoints:
-                with self.subTest(method=method, endpoint=endpoint):
-                    response = getattr(self.user_client, method)(endpoint)
-                    self.assertEqual(response.status_code, http_status)
+        self.__launch_tests(endpoints_dict, self.user_client)
