@@ -124,6 +124,9 @@ class CustomUserSerializer(serializers.ModelSerializer):
     is_subscribed = serializers.SerializerMethodField()
 
     def get_is_subscribed(self, obj):
+        if 'request' not in self.context:
+            return False
+
         if not self.context['request'].user.is_authenticated:
             return False
 

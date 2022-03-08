@@ -43,7 +43,6 @@ class IngredientViewSet(ListRetrieveViewSet):
 
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
-    serializer_class = RecipeSerializer
 
     permission_classes = (RecipePermissions,)
     filter_backends = (DjangoFilterBackend,)
