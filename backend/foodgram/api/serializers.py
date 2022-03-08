@@ -96,10 +96,10 @@ class RecipeSerializerList(serializers.ModelSerializer):
         model = Recipe
 
 
-class IngredientCreateSerializer(serializers.ModelSerializer):
+class RecipeCreateIngredientSerializer(serializers.ModelSerializer):
     id = serializers.PrimaryKeyRelatedField(
         source='ingredient', queryset=Ingredient.objects.all())
-    amount = serializers.IntegerField(required=True)
+    # amount = serializers.IntegerField(required=True)
 
     class Meta:
         fields = ('id', 'amount')
@@ -145,9 +145,8 @@ class RecipeShortSerilizer(serializers.ModelSerializer):
         model = Recipe
 
 
-class RecipeSerializer(serializers.ModelSerializer):
-    ingredients = IngredientCreateSerializer(
-        required=True, many=True, read_only=False)
+class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
+    ingredients = RecipeCreateIngredientSerializer(many=True)
     image = ImageBase64Field()
     author = CustomUserSerializer(required=False)
 
@@ -168,6 +167,20 @@ class RecipeSerializer(serializers.ModelSerializer):
             ).save()
 
         return obj
+
+    def validate(self, data):
+        keys = ('ingredients', 'tags', 'image', 'text', 'name', 'cooking_time')
+
+        errors = {}
+
+        for key in keys:
+            if key not in data:
+                errors.update({key: 'Обязательное поле'})
+
+        if errors:
+            raise serializers.ValidationError(errors, code='field_error')
+
+        return data
 
     @transaction.atomic
     def update(self, instance, validated_data):
