@@ -24,6 +24,8 @@ class APITests(APITestCase, URLPatternsTestCase):
     user_client: APIClient
     anon_client: APIClient
 
+    keys_post_detail: list
+
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -31,6 +33,9 @@ class APITests(APITestCase, URLPatternsTestCase):
         cls.user = get_object_or_404(User, pk=2)
         cls.user_follower = get_object_or_404(User, pk=3)
         cls.recipe = get_object_or_404(Recipe, pk=1)
+
+        cls.keys_post_detail = sorted(
+            ['id', 'name', 'image', 'cooking_time'])
 
     @classmethod
     def tearDownClass(cls):
@@ -81,13 +86,14 @@ class APITests(APITestCase, URLPatternsTestCase):
         response = self.user_client.post(endpoint)
         recipes_in_cart_count_1 = ShoppingCart.objects.all().count()
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(sorted(response.data.keys()), self.keys_post_detail)
         self.assertEqual(recipes_in_cart_count_1, recipes_in_cart_count_0 + 1)
         self.assertEqual(self.user.shopping_cart.get().recipe, self.recipe)
 
         response = self.user_client.post(endpoint)
-        recipes_in_cart_count_2 = ShoppingCart.objects.all().count()
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(recipes_in_cart_count_2, recipes_in_cart_count_1)
+        self.assertEqual(
+            ShoppingCart.objects.all().count(), recipes_in_cart_count_1)
 
     def test_user_shopping_cart_delete_item(self):
         """Авторизованные пользователи. Удалить рецепт из списка покупок."""
@@ -100,9 +106,9 @@ class APITests(APITestCase, URLPatternsTestCase):
         response = self.user_client.delete(endpoint)
         recipes_in_cart_count_1 = ShoppingCart.objects.all().count()
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-        self.assertEqual(recipes_in_cart_count_1, recipes_in_cart_count_0-1)
+        self.assertEqual(recipes_in_cart_count_1, recipes_in_cart_count_0 - 1)
 
         response = self.user_client.delete(endpoint)
-        recipes_in_cart_count_2 = ShoppingCart.objects.all().count()
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(recipes_in_cart_count_2, recipes_in_cart_count_1)
+        self.assertEqual(
+            ShoppingCart.objects.all().count(), recipes_in_cart_count_1)

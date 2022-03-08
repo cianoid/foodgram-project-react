@@ -82,7 +82,7 @@ class APITests(APITestCase, URLPatternsTestCase):
                 reverse('api:customuser-me'),
                 reverse('api:download_shopping_cart'),
                 reverse('api:subscriptions'),
-
+                reverse('api:customuser-detail', args=(10000,)),
             ),
             (status.HTTP_400_BAD_REQUEST, 'post'): (
                 reverse('api:customuser-list'),
@@ -162,6 +162,12 @@ class APITests(APITestCase, URLPatternsTestCase):
                 reverse('api:favorites', args=(self.recipe.pk,)),
                 reverse('api:subscribe', args=(self.user_follower.pk,)),
             ),
+            (status.HTTP_404_NOT_FOUND, 'delete'): (
+                reverse('api:recipes-detail', args=(10000,)),
+                reverse('api:shopping_cart', args=(10000,)),
+                reverse('api:favorites', args=(10000,)),
+                reverse('api:subscribe', args=(10000,)),
+            ),
             (status.HTTP_403_FORBIDDEN, 'post'): (
                 reverse('api:login'),
                 reverse('api:customuser-list'),
@@ -170,6 +176,8 @@ class APITests(APITestCase, URLPatternsTestCase):
                 reverse('api:logout'),
             ),
             (status.HTTP_404_NOT_FOUND, 'get'): (
+                reverse('api:recipes-detail', args=(1000,)),
+                reverse('api:customuser-detail', args=(10000,)),
                 reverse('api:recipes-detail', args=(10000,)),
                 reverse('api:tags-detail', args=(10000,)),
                 reverse('api:ingredients-detail', args=(10000,)),

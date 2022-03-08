@@ -22,12 +22,18 @@ class APITests(APITestCase, URLPatternsTestCase):
     user_client: APIClient
     anon_client: APIClient
 
+    keys_get_list: list
+    keys_get_detail: list
+
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
 
         cls.user = get_object_or_404(User, pk=2)
         cls.tag = get_object_or_404(Tag, pk=1)
+
+        cls.keys_get_list = sorted(['name', 'slug', 'color', 'id'])
+        cls.keys_get_detail = cls.keys_get_list
 
     @classmethod
     def tearDownClass(cls):
@@ -48,6 +54,8 @@ class APITests(APITestCase, URLPatternsTestCase):
 
         response = apiclient.get(endpoint)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            sorted(list(response.data[0].keys())), self.keys_get_list)
         self.assertEqual(response.data[0]['id'], self.tag.pk)
         self.assertEqual(response.data[0]['slug'], self.tag.slug)
         self.assertEqual(len(response.data), Tag.objects.all().count())
@@ -57,6 +65,8 @@ class APITests(APITestCase, URLPatternsTestCase):
 
         response = apiclient.get(endpoint)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            sorted(list(response.data.keys())), self.keys_get_detail)
         self.assertEqual(response.data['id'], self.tag.pk)
         self.assertEqual(response.data['slug'], self.tag.slug)
 

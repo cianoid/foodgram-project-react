@@ -42,6 +42,15 @@ class APITests(APITestCase, URLPatternsTestCase):
     )
     small_gif_name = 'small.gif'
 
+    keys_get_list_detail: list
+    keys_get_list_detail_author: list
+    keys_get_list_detail_tags: list
+    keys_get_list_detail_ingredients: list
+    keys_post_list_detail: list
+    keys_post_list_detail_author: list
+    keys_post_list_detail_tags: list
+    keys_post_list_detail_ingredients: list
+
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -56,6 +65,21 @@ class APITests(APITestCase, URLPatternsTestCase):
 
         for model in [Favorite, ShoppingCart]:
             model.objects.create(user=cls.user_follower, recipe=cls.recipe)
+
+        cls.keys_get_list_detail = sorted(
+            ['id', 'tags', 'author', 'ingredients', 'is_favorited',
+             'is_in_shopping_cart', 'name', 'image', 'text', 'cooking_time'])
+        cls.keys_get_list_detail_author = sorted(
+            ['email', 'username', 'id', 'first_name', 'last_name',
+             'is_subscribed'])
+        cls.keys_get_list_detail_tags = sorted(['id', 'name', 'color', 'slug'])
+        cls.keys_get_list_detail_ingredients = sorted(
+            ['id', 'name', 'amount', 'measurement_unit'])
+        cls.keys_post_list_detail = cls.keys_get_list_detail
+        cls.keys_post_list_detail_author = cls.keys_get_list_detail_author
+        cls.keys_post_list_detail_tags = cls.keys_get_list_detail_tags
+        cls.keys_post_list_detail_ingredients = (
+            cls.keys_get_list_detail_ingredients)
 
     @classmethod
     def tearDownClass(cls):
@@ -87,6 +111,18 @@ class APITests(APITestCase, URLPatternsTestCase):
 
         response = apiclient.get(endpoint)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            sorted(response.data['results'][0].keys()),
+            self.keys_get_list_detail)
+        self.assertEqual(
+            sorted(response.data['results'][0]['ingredients'][0].keys()),
+            self.keys_get_list_detail_ingredients)
+        self.assertEqual(
+            sorted(response.data['results'][0]['author'].keys()),
+            self.keys_get_list_detail_author)
+        self.assertEqual(
+            sorted(response.data['results'][0]['tags'][0].keys()),
+            self.keys_get_list_detail_tags)
         self.assertEqual(response.data['count'], self.recipe_count)
         self.assertEqual(response.data['results'][0]['name'], self.recipe.name)
         self.assertIsNone(response.data['next'])
@@ -96,6 +132,18 @@ class APITests(APITestCase, URLPatternsTestCase):
 
         response = apiclient.get(endpoint)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            sorted(response.data['results'][0].keys()),
+            self.keys_get_list_detail)
+        self.assertEqual(
+            sorted(response.data['results'][0]['ingredients'][0].keys()),
+            self.keys_get_list_detail_ingredients)
+        self.assertEqual(
+            sorted(response.data['results'][0]['author'].keys()),
+            self.keys_get_list_detail_author)
+        self.assertEqual(
+            sorted(response.data['results'][0]['tags'][0].keys()),
+            self.keys_get_list_detail_tags)
         self.assertEqual(response.data['count'], self.recipe_count)
         self.assertEqual(response.data['results'][0]['name'], self.recipe.name)
         self.assertIsNotNone(response.data['next'])
@@ -106,6 +154,18 @@ class APITests(APITestCase, URLPatternsTestCase):
 
         response = apiclient.get(endpoint)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            sorted(response.data['results'][0].keys()),
+            self.keys_get_list_detail)
+        self.assertEqual(
+            sorted(response.data['results'][0]['ingredients'][0].keys()),
+            self.keys_get_list_detail_ingredients)
+        self.assertEqual(
+            sorted(response.data['results'][0]['author'].keys()),
+            self.keys_get_list_detail_author)
+        self.assertEqual(
+            sorted(response.data['results'][0]['tags'][0].keys()),
+            self.keys_get_list_detail_tags)
         self.assertEqual(response.data['count'], self.recipe_count)
         self.assertNotEqual(
             response.data['results'][0]['name'], self.recipe.name)
@@ -121,6 +181,18 @@ class APITests(APITestCase, URLPatternsTestCase):
 
         response = apiclient.get(endpoint)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            sorted(response.data['results'][0].keys()),
+            self.keys_get_list_detail)
+        self.assertEqual(
+            sorted(response.data['results'][0]['ingredients'][0].keys()),
+            self.keys_get_list_detail_ingredients)
+        self.assertEqual(
+            sorted(response.data['results'][0]['author'].keys()),
+            self.keys_get_list_detail_author)
+        self.assertEqual(
+            sorted(response.data['results'][0]['tags'][0].keys()),
+            self.keys_get_list_detail_tags)
         self.assertEqual(response.data['count'], author_recipe_count)
         self.assertEqual(
             response.data['results'][0]['name'], author_recipes[0].name)
@@ -133,6 +205,18 @@ class APITests(APITestCase, URLPatternsTestCase):
 
         response = apiclient.get(endpoint)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            sorted(response.data['results'][0].keys()),
+            self.keys_get_list_detail)
+        self.assertEqual(
+            sorted(response.data['results'][0]['ingredients'][0].keys()),
+            self.keys_get_list_detail_ingredients)
+        self.assertEqual(
+            sorted(response.data['results'][0]['author'].keys()),
+            self.keys_get_list_detail_author)
+        self.assertEqual(
+            sorted(response.data['results'][0]['tags'][0].keys()),
+            self.keys_get_list_detail_tags)
         self.assertEqual(response.data['count'], tag1_recipe_count)
 
         endpoint = (reverse('api:recipes-list') +
@@ -149,6 +233,17 @@ class APITests(APITestCase, URLPatternsTestCase):
 
         response = apiclient.get(endpoint)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            sorted(response.data.keys()), self.keys_get_list_detail)
+        self.assertEqual(
+            sorted(response.data['ingredients'][0].keys()),
+            self.keys_get_list_detail_ingredients)
+        self.assertEqual(
+            sorted(response.data['author'].keys()),
+            self.keys_get_list_detail_author)
+        self.assertEqual(
+            sorted(response.data['tags'][0].keys()),
+            self.keys_get_list_detail_tags)
         self.assertEqual(response.data['id'], self.recipe.pk)
 
     def test_anon_recipe_list(self):
@@ -189,6 +284,18 @@ class APITests(APITestCase, URLPatternsTestCase):
 
         response = self.user_follower_client.get(endpoint)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            sorted(response.data['results'][0].keys()),
+            self.keys_get_list_detail)
+        self.assertEqual(
+            sorted(response.data['results'][0]['ingredients'][0].keys()),
+            self.keys_get_list_detail_ingredients)
+        self.assertEqual(
+            sorted(response.data['results'][0]['author'].keys()),
+            self.keys_get_list_detail_author)
+        self.assertEqual(
+            sorted(response.data['results'][0]['tags'][0].keys()),
+            self.keys_get_list_detail_tags)
         self.assertEqual(response.data['count'], 1)
         self.assertEqual(response.data['results'][0]['id'], 1)
 
@@ -197,6 +304,18 @@ class APITests(APITestCase, URLPatternsTestCase):
 
         response = self.user_follower_client.get(endpoint)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            sorted(response.data['results'][0].keys()),
+            self.keys_get_list_detail)
+        self.assertEqual(
+            sorted(response.data['results'][0]['ingredients'][0].keys()),
+            self.keys_get_list_detail_ingredients)
+        self.assertEqual(
+            sorted(response.data['results'][0]['author'].keys()),
+            self.keys_get_list_detail_author)
+        self.assertEqual(
+            sorted(response.data['results'][0]['tags'][0].keys()),
+            self.keys_get_list_detail_tags)
         self.assertEqual(response.data['count'], 1)
         self.assertEqual(response.data['results'][0]['id'], 1)
 
@@ -238,6 +357,17 @@ class APITests(APITestCase, URLPatternsTestCase):
         response = self.user_client.post(
             endpoint, data=recipe_data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(
+            sorted(response.data.keys()), self.keys_post_list_detail)
+        self.assertEqual(
+            sorted(response.data['ingredients'][0].keys()),
+            self.keys_post_list_detail_ingredients)
+        self.assertEqual(
+            sorted(response.data['author'].keys()),
+            self.keys_post_list_detail_author)
+        self.assertEqual(
+            sorted(response.data['tags'][0].keys()),
+            self.keys_post_list_detail_tags)
         self.assertEqual(response.data['name'], recipe_data['name'])
 
         recipe_count = Recipe.objects.count()
@@ -266,7 +396,8 @@ class APITests(APITestCase, URLPatternsTestCase):
         new_recipe = self.__create_recipe()
         endpoint = reverse('api:recipes-detail', args=(new_recipe.pk,))
         updated_recipe_name = 'updated_recipe_name'
-        update_data = model_to_dict(new_recipe, fields=('text', 'cooking_time'))
+        update_data = model_to_dict(
+            new_recipe, fields=('text', 'cooking_time'))
         update_data.update({
             'ingredients': [{'id': self.ingredient.pk, 'amount': 100}],
             'tags': [self.tag.pk],
@@ -281,6 +412,17 @@ class APITests(APITestCase, URLPatternsTestCase):
         response = self.user_client.patch(
             endpoint, data=update_data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            sorted(response.data.keys()), self.keys_post_list_detail)
+        self.assertEqual(
+            sorted(response.data['ingredients'][0].keys()),
+            self.keys_post_list_detail_ingredients)
+        self.assertEqual(
+            sorted(response.data['author'].keys()),
+            self.keys_post_list_detail_author)
+        self.assertEqual(
+            sorted(response.data['tags'][0].keys()),
+            self.keys_post_list_detail_tags)
         self.assertEqual(Recipe.objects.all().count(), recipe_count)
         self.assertEqual(response.data['name'], updated_recipe_name)
 
@@ -335,5 +477,3 @@ class APITests(APITestCase, URLPatternsTestCase):
         response = self.user_follower_client.delete(endpoint)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(Recipe.objects.all().count(), recipe_count)
-
-

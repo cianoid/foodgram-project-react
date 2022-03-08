@@ -27,6 +27,12 @@ class APITests(APITestCase, URLPatternsTestCase):
     user_client: APIClient
     anon_client: APIClient
 
+    keys_get_list: list
+    keys_get_detail: list
+    keys_get_me: list
+    keys_post_list: list
+    keys_post_login: list
+
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -35,6 +41,19 @@ class APITests(APITestCase, URLPatternsTestCase):
         cls.user_follower = get_object_or_404(User, pk=3)
 
         cls.user_count = User.objects.all().count()
+
+        cls.keys_get_list = sorted(
+            ['email', 'id', 'username', 'first_name', 'last_name',
+             'is_subscribed'])
+        cls.keys_get_detail = sorted(
+            ['email', 'id', 'username', 'first_name', 'last_name',
+             'is_subscribed'])
+        cls.keys_get_me = sorted(
+            ['email', 'id', 'username', 'first_name', 'last_name',
+             'is_subscribed'])
+        cls.keys_post_list = sorted(
+            ['email', 'id', 'username', 'first_name', 'last_name'])
+        cls.keys_post_login = ['auth_token']
 
     @classmethod
     def tearDownClass(cls):
@@ -53,6 +72,8 @@ class APITests(APITestCase, URLPatternsTestCase):
 
         response = self.anon_client.get(endpoint)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            sorted(response.data['results'][0].keys()), self.keys_get_list)
         self.assertEqual(
             response.data['results'][0]['username'], self.first_user_username)
         self.assertEqual(response.data['count'], self.user_count)
@@ -101,6 +122,8 @@ class APITests(APITestCase, URLPatternsTestCase):
             User, username=new_user_data.get('username'),
             email=new_user_data.get('email')).username
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(
+            sorted(response.data.keys()), self.keys_post_list)
         self.assertEqual(User.objects.all().count(), user_count_0 + 1)
         self.assertEqual(new_user_username, new_user_data['username'])
 
@@ -119,7 +142,8 @@ class APITests(APITestCase, URLPatternsTestCase):
 
         response = self.anon_client.post(endpoint, data=auth_data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertIn('auth_token', response.data)
+        self.assertEqual(
+            sorted(response.data.keys()), self.keys_post_login)
 
     def test_anon_user_profile(self):
         """Неавторизованные пользователи. Профиль пользователя."""
@@ -154,11 +178,16 @@ class APITests(APITestCase, URLPatternsTestCase):
             'current_password': newpassword,
         }
 
+        password1 = self.user.password
+
         response = self.user_client.post(endpoint, password_data)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        password2 = self.user.password
+        self.assertNotEqual(password1, password2)
 
         response = self.user_client.post(endpoint, revert_password_data)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertNotEqual(self.user.password, password2)
 
     def test_user_user_list(self):
         """Авторизованные пользователи. Список пользователей."""
@@ -167,6 +196,8 @@ class APITests(APITestCase, URLPatternsTestCase):
 
         response = self.user_client.get(endpoint)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            sorted(response.data['results'][0].keys()), self.keys_get_list)
         self.assertEqual(
             response.data['results'][0]['username'], self.first_user_username)
         self.assertEqual(response.data['count'], self.user_count)
@@ -180,6 +211,8 @@ class APITests(APITestCase, URLPatternsTestCase):
         response = self.user_client.get(endpoint)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
+            sorted(response.data.keys()), self.keys_get_detail)
+        self.assertEqual(
             response.data['username'], self.user.username)
 
     def test_user_user_me(self):
@@ -189,5 +222,7 @@ class APITests(APITestCase, URLPatternsTestCase):
 
         response = self.user_client.get(endpoint)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            sorted(response.data.keys()), self.keys_get_me)
         self.assertEqual(
             response.data['username'], self.user.username)

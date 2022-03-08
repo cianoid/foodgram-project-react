@@ -23,12 +23,17 @@ class APITests(APITestCase, URLPatternsTestCase):
     user_client: APIClient
     anon_client: APIClient
 
+    keys_post_detail: list
+
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
 
         cls.user = get_object_or_404(User, pk=2)
         cls.recipe = get_object_or_404(Recipe, pk=1)
+
+        cls.keys_post_detail = sorted(
+            ['id', 'name', 'image', 'cooking_time'])
 
     @classmethod
     def tearDownClass(cls):
@@ -51,33 +56,34 @@ class APITests(APITestCase, URLPatternsTestCase):
         """Авторизованные пользователи. Добавить рецепт в избранное."""
 
         endpoint = reverse('api:favorites', args=(self.recipe.pk,))
-        recipes_in_cart_count_0 = Favorite.objects.all().count()
+        recipes_in_cart_count = Favorite.objects.all().count()
 
         response = self.user_client.post(endpoint)
         recipes_in_cart_count_1 = Favorite.objects.all().count()
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(recipes_in_cart_count_1, recipes_in_cart_count_0 + 1)
+        self.assertEqual(sorted(response.data.keys()), self.keys_post_detail)
+        self.assertEqual(recipes_in_cart_count_1, recipes_in_cart_count + 1)
         self.assertEqual(self.user.favorites.get().recipe, self.recipe)
 
         response = self.user_client.post(endpoint)
-        recipes_in_cart_count_2 = Favorite.objects.all().count()
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(recipes_in_cart_count_2, recipes_in_cart_count_1)
+        self.assertEqual(
+            Favorite.objects.all().count(), recipes_in_cart_count_1)
 
     def test_user_favorites_delete_item(self):
         """Авторизованные пользователи. Удалить рецепт из избранного."""
 
         endpoint = reverse('api:favorites', args=(self.recipe.pk,))
         Favorite.objects.create(user=self.user, recipe=self.recipe)
-        recipes_in_cart_count_0 = Favorite.objects.all().count()
-        self.assertEqual(recipes_in_cart_count_0, 1)
+        recipes_in_cart_count = Favorite.objects.all().count()
+        self.assertEqual(recipes_in_cart_count, 1)
 
         response = self.user_client.delete(endpoint)
         recipes_in_cart_count_1 = Favorite.objects.all().count()
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-        self.assertEqual(recipes_in_cart_count_1, recipes_in_cart_count_0 - 1)
+        self.assertEqual(recipes_in_cart_count_1, recipes_in_cart_count - 1)
 
         response = self.user_client.delete(endpoint)
-        recipes_in_cart_count_2 = Favorite.objects.all().count()
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(recipes_in_cart_count_2, recipes_in_cart_count_1)
+        self.assertEqual(
+            Favorite.objects.all().count(), recipes_in_cart_count_1)

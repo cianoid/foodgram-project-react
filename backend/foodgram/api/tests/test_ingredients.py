@@ -22,12 +22,18 @@ class APITests(APITestCase, URLPatternsTestCase):
     user_client: APIClient
     anon_client: APIClient
 
+    keys_get_list: list
+    keys_get_detail: list
+
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
 
         cls.user = get_object_or_404(User, pk=2)
         cls.ingredient = get_object_or_404(Ingredient, pk=802)
+
+        cls.keys_get_list = sorted(['id', 'name', 'measurement_unit'])
+        cls.keys_get_detail = cls.keys_get_list
 
     @classmethod
     def tearDownClass(cls):
@@ -48,6 +54,8 @@ class APITests(APITestCase, URLPatternsTestCase):
 
         response = apiclient.get(endpoint)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            sorted(list(response.data[0].keys())), self.keys_get_list)
         self.assertEqual(response.data[0]['id'], self.ingredient.pk)
         self.assertEqual(response.data[0]['name'], self.ingredient.name)
         self.assertEqual(len(response.data), Ingredient.objects.all().count())
@@ -58,6 +66,8 @@ class APITests(APITestCase, URLPatternsTestCase):
 
         response = apiclient.get(endpoint)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            sorted(list(response.data[0].keys())), self.keys_get_list)
         self.assertEqual(response.data[0]['id'], last_ingredient.pk)
         self.assertEqual(response.data[0]['name'], last_ingredient.name)
         self.assertEqual(
@@ -80,6 +90,8 @@ class APITests(APITestCase, URLPatternsTestCase):
 
         response = apiclient.get(endpoint)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            sorted(list(response.data.keys())), self.keys_get_detail)
         self.assertEqual(response.data['id'], self.ingredient.pk)
         self.assertEqual(response.data['name'], self.ingredient.name)
 
