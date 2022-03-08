@@ -59,7 +59,7 @@ class APITests(APITestCase, URLPatternsTestCase):
         cls.user_follower = get_object_or_404(User, pk=3)
         cls.tag = get_object_or_404(Tag, pk=1)
         cls.ingredient = get_object_or_404(Ingredient, pk=802)
-        cls.recipe = get_object_or_404(Recipe, pk=1)
+        cls.recipe = Recipe.objects.all().first()
 
         cls.recipe_count = Recipe.objects.all().count()
 
@@ -296,7 +296,7 @@ class APITests(APITestCase, URLPatternsTestCase):
             sorted(response.data['results'][0]['tags'][0].keys()),
             self.keys_get_list_detail_tags)
         self.assertEqual(response.data['count'], 1)
-        self.assertEqual(response.data['results'][0]['id'], 1)
+        self.assertEqual(response.data['results'][0]['id'], self.recipe.pk)
 
         # Фильтрация по списку покупок
         endpoint = reverse('api:recipes-list') + '?is_in_shopping_cart=1'
@@ -316,7 +316,7 @@ class APITests(APITestCase, URLPatternsTestCase):
             sorted(response.data['results'][0]['tags'][0].keys()),
             self.keys_get_list_detail_tags)
         self.assertEqual(response.data['count'], 1)
-        self.assertEqual(response.data['results'][0]['id'], 1)
+        self.assertEqual(response.data['results'][0]['id'], self.recipe.pk)
 
     def test_user_recipe_detail(self):
         """Авторизованные пользователи. Получение рецепта."""

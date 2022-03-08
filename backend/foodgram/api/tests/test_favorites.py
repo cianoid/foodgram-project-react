@@ -30,7 +30,7 @@ class APITests(APITestCase, URLPatternsTestCase):
         super().setUpClass()
 
         cls.user = get_object_or_404(User, pk=2)
-        cls.recipe = get_object_or_404(Recipe, pk=1)
+        cls.recipe = cls.recipe = Recipe.objects.all().first()
 
         cls.keys_post_detail = sorted(
             ['id', 'name', 'image', 'cooking_time'])

@@ -36,7 +36,7 @@ class APITests(APITestCase, URLPatternsTestCase):
         cls.user_follower = get_object_or_404(User, pk=3)
         cls.tag = get_object_or_404(Tag, pk=1)
         cls.ingredient = get_object_or_404(Ingredient, pk=802)
-        cls.recipe = get_object_or_404(Recipe, pk=1)
+        cls.recipe = Recipe.objects.all().first()
         cls.recipe_follower = get_object_or_404(
             Recipe, author=cls.user_follower)
         cls.recipe_to_delete = Recipe.objects.all().last()
