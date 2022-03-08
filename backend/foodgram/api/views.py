@@ -2,12 +2,11 @@ from django.contrib.auth import get_user_model
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import (filters, generics, mixins, permissions, status,
-                            viewsets)
+from rest_framework import generics, mixins, permissions, status, viewsets
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.views import APIView, Response
 
-from api.filters import RecipeFilter
+from api.filters import IngredientsSearchFilter, RecipeFilter
 from api.pagination import CustomPageNumberPagination
 from api.permissions import RecipePermissions
 from api.serializers import (IngredientSerializer, RecipeSerializer,
@@ -22,7 +21,6 @@ User = get_user_model()
 
 class ListRetrieveViewSet(viewsets.GenericViewSet, mixins.ListModelMixin,
                           mixins.RetrieveModelMixin):
-    # @TODO Check it
     permission_classes = (permissions.AllowAny,)
 
 
@@ -37,8 +35,9 @@ class IngredientViewSet(ListRetrieveViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
 
-    filter_backends = (filters.SearchFilter,)
+    filter_backends = (IngredientsSearchFilter,)
     search_fields = ('^name',)
+
     pagination_class = None
 
 
