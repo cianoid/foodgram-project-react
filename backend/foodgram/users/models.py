@@ -16,6 +16,8 @@ class CustomUser(AbstractUser):
 
     class Meta:
         ordering = ('id', )
+        verbose_name = 'пользователя'
+        verbose_name_plural = 'пользователи'
 
     def __str__(self):
         return f'{self.first_name} {self.last_name}'

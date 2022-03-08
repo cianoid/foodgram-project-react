@@ -74,7 +74,7 @@ class Recipe(BaseModel):
     class Meta:
         verbose_name = 'рецепт'
         verbose_name_plural = 'рецепты'
-        ordering = ('id', )
+        ordering = ('-created', )
 
     def __str__(self):
         return self.name
@@ -84,9 +84,13 @@ class IngredientRecipeRelation(models.Model):
     recipe = models.ForeignKey(
         Recipe, on_delete=models.CASCADE, verbose_name='Рецепт')
     ingredient = models.ForeignKey(
-        Ingredient, on_delete=models.PROTECT, verbose_name='Пользователь')
+        Ingredient, on_delete=models.PROTECT, verbose_name='Ингредиент')
     amount = models.PositiveSmallIntegerField(
         'Количество', validators=(MinValueValidator(1),))
+
+    class Meta:
+        verbose_name = 'Ингредиенты для рецепта'
+        verbose_name_plural = 'Ингредиенты для рецепта'
 
     def __str__(self):
         return '{} ({})'.format(self.ingredient.name, self.recipe.name)
@@ -121,7 +125,8 @@ class ShoppingCart(BaseModel):
         User, on_delete=models.CASCADE, related_name='shopping_cart',
         verbose_name='Пользователь')
     recipe = models.ForeignKey(
-        Recipe, on_delete=models.CASCADE, verbose_name='Рецепт')
+        Recipe, on_delete=models.CASCADE, related_name='shopping_cart',
+        verbose_name='Рецепт')
 
     class Meta:
         ordering = ('id',)
@@ -143,7 +148,8 @@ class Favorite(BaseModel):
         User, on_delete=models.CASCADE, related_name='favorites',
         verbose_name='Пользователь')
     recipe = models.ForeignKey(
-        Recipe, on_delete=models.CASCADE, verbose_name='Рецепт')
+        Recipe, on_delete=models.CASCADE, verbose_name='Рецепт',
+        related_name='favorites')
 
     class Meta:
         ordering = ('id',)
