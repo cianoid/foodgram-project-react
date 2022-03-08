@@ -149,6 +149,21 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
     ingredients = RecipeCreateIngredientSerializer(many=True)
     image = ImageBase64Field()
     author = CustomUserSerializer(required=False)
+    is_favorited = serializers.SerializerMethodField()
+    is_in_shopping_cart = serializers.SerializerMethodField()
+
+    def __is_something(self, obj, model):
+        if not self.context['request'].user.is_authenticated:
+            return False
+
+        return model.objects.filter(
+            recipe=obj, user=self.context['request'].user).exists()
+
+    def get_is_in_shopping_cart(self, obj):
+        return self.__is_something(obj, ShoppingCart)
+
+    def get_is_favorited(self, obj):
+        return self.__is_something(obj, Favorite)
 
     @transaction.atomic
     def create(self, validated_data):
@@ -214,7 +229,9 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
         return representation
 
     class Meta:
-        exclude = ('created', )
+        fields = ('id', 'tags', 'author', 'ingredients', 'is_favorited',
+                  'is_in_shopping_cart', 'name', 'image', 'text',
+                  'cooking_time')
         model = Recipe
 
 
