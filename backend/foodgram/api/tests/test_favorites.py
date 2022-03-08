@@ -5,7 +5,7 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APIClient, APITestCase, URLPatternsTestCase
 
-from recipes.models import (Ingredient, IngredientRecipeRelation, Favorite,
+from recipes.models import (Favorite, Ingredient, IngredientRecipeRelation,
                             Recipe, Tag)
 
 User = get_user_model()

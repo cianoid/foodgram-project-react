@@ -61,8 +61,8 @@ class APITests(APITestCase, URLPatternsTestCase):
         self.assertEqual(len(response.data), Ingredient.objects.all().count())
 
         last_ingredient = Ingredient.objects.all().last()
-        endpoint = (reverse('api:ingredients-list') +
-                    '?name={}'.format(last_ingredient.name))
+        endpoint = reverse('api:ingredients-list') + '?name={}'.format(
+            last_ingredient.name)
 
         response = apiclient.get(endpoint)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -74,9 +74,9 @@ class APITests(APITestCase, URLPatternsTestCase):
             len(response.data),
             Ingredient.objects.filter(name=last_ingredient.name).count())
 
-        missing_ingredient='neverfindit'
-        endpoint = (reverse('api:ingredients-list') +
-                    '?name={}'.format(missing_ingredient))
+        missing_ingredient = 'neverfindit'
+        endpoint = reverse('api:ingredients-list') + '?name={}'.format(
+            missing_ingredient)
 
         response = apiclient.get(endpoint)
         self.assertEqual(response.status_code, status.HTTP_200_OK)

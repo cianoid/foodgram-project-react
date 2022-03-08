@@ -1,8 +1,8 @@
 from django.contrib import admin
 from sorl.thumbnail.admin import AdminImageMixin
 
-from recipes.models import (Ingredient, IngredientRecipeRelation, Favorite,
-                            Recipe, Subscription, ShoppingCart, Tag)
+from recipes.models import (Favorite, Ingredient, IngredientRecipeRelation,
+                            Recipe, ShoppingCart, Subscription, Tag)
 
 
 class IngredientRecipeRelationAdminInline(admin.TabularInline):

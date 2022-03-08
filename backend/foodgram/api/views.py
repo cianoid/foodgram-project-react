@@ -9,7 +9,8 @@ from rest_framework.views import APIView, Response
 from api.filters import IngredientsSearchFilter, RecipeFilter
 from api.pagination import CustomPageNumberPagination
 from api.permissions import RecipePermissions
-from api.serializers import (IngredientSerializer, RecipeCreateUpdateSerializer,
+from api.serializers import (IngredientSerializer,
+                             RecipeCreateUpdateSerializer,
                              RecipeSerializerList, RecipeShortSerilizer,
                              SubscriptionListSerializer, TagSerializer)
 from core import pdf

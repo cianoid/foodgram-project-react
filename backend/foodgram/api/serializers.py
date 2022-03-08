@@ -1,11 +1,11 @@
 import base64
 import mimetypes
 
+import djoser.serializers
 from django.contrib.auth import get_user_model
 from django.core.files.base import ContentFile
 from django.db import transaction
 from django.shortcuts import get_object_or_404
-import djoser.serializers
 from rest_framework import serializers
 from rest_framework.settings import api_settings
 
@@ -264,5 +264,5 @@ class SubscriptionListSerializer(serializers.ModelSerializer):
 
     class Meta:
         fields = ('id', 'email', 'username', 'first_name', 'last_name',
-                  'is_subscribed','recipes', 'recipes_count')
+                  'is_subscribed', 'recipes', 'recipes_count')
         model = User

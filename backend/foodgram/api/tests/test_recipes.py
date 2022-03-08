@@ -8,7 +8,7 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APIClient, APITestCase, URLPatternsTestCase
 
-from recipes.models import (Ingredient, IngredientRecipeRelation, Favorite,
+from recipes.models import (Favorite, Ingredient, IngredientRecipeRelation,
                             Recipe, ShoppingCart, Subscription, Tag)
 
 User = get_user_model()
@@ -174,8 +174,8 @@ class APITests(APITestCase, URLPatternsTestCase):
         self.assertEqual(len(response.data['results']), 1)
 
         # Фильтрация по автору
-        endpoint = (reverse('api:recipes-list') +
-                    '?author={}'.format(self.user.pk))
+        endpoint = reverse('api:recipes-list') + '?author={}'.format(
+            self.user.pk)
         author_recipes = self.user.recipes.all()
         author_recipe_count = author_recipes.count()
 
@@ -198,8 +198,8 @@ class APITests(APITestCase, URLPatternsTestCase):
             response.data['results'][0]['name'], author_recipes[0].name)
 
         # Фильтрация по тегам
-        endpoint = (reverse('api:recipes-list') +
-                    '?tags={}'.format(self.tag.slug))
+        endpoint = reverse('api:recipes-list') + '?tags={}'.format(
+            self.tag.slug)
         tag1_recipe_count = self.tag.recipes.all().count()
         tag1_2_recipe_count = Tag.objects.filter(pk__in=[1, 2]).count()
 
@@ -219,9 +219,8 @@ class APITests(APITestCase, URLPatternsTestCase):
             self.keys_get_list_detail_tags)
         self.assertEqual(response.data['count'], tag1_recipe_count)
 
-        endpoint = (reverse('api:recipes-list') +
-                    '?tags={}&tags={}'.format(
-                        self.tag.slug, get_object_or_404(Tag, pk=2).slug))
+        endpoint = reverse('api:recipes-list') + '?tags={}&tags={}'.format(
+            self.tag.slug, get_object_or_404(Tag, pk=2).slug)
 
         response = apiclient.get(endpoint)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
