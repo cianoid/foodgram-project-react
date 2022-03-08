@@ -18,7 +18,7 @@ class BaseModel(models.Model):
 
 class Tag(models.Model):
     name = models.CharField(
-        'Имя тега', max_length=150)
+        'Имя тега', max_length=150, unique=True)
     color = models.CharField(
         'Цвет', help_text=('Введите код цвета в шестнадцетиричном формате '
                            '(#ABCDEF)'),
@@ -27,7 +27,7 @@ class Tag(models.Model):
                 regex='^#[a-eA-E0-9]{6}$', code='wrong_hex_code',
                 message='Неправильный формат цвета'), ))
     slug = models.SlugField(
-        'Slug', help_text='Введите slug тега')
+        'Slug', help_text='Введите slug тега', unique=True)
 
     class Meta:
         verbose_name = 'тег'
@@ -48,6 +48,10 @@ class Ingredient(models.Model):
         verbose_name = 'ингридиент'
         verbose_name_plural = 'ингридиенты'
         ordering = ('id', )
+        constraints = [
+            models.UniqueConstraint(
+                fields=('name', 'measurement_unit'), name='Unique ingredient')
+        ]
 
     def __str__(self):
         return f'{self.name}, {self.measurement_unit}'
@@ -92,6 +96,11 @@ class IngredientRecipeRelation(models.Model):
     class Meta:
         verbose_name = 'Ингредиенты для рецепта'
         verbose_name_plural = 'Ингредиенты для рецепта'
+        constraints = [
+            models.UniqueConstraint(
+                fields=('recipe', 'ingredient'),
+                name='Unique ingredient for recipe')
+        ]
 
     def __str__(self):
         return '{} ({})'.format(self.ingredient.name, self.recipe.name)
