@@ -39,6 +39,7 @@ class IngredientViewSet(ListRetrieveViewSet):
 
     filter_backends = (filters.SearchFilter,)
     search_fields = ('^name',)
+    pagination_class = None
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
