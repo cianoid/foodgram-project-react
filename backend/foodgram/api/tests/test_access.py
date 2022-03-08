@@ -23,6 +23,8 @@ class APITests(APITestCase, URLPatternsTestCase):
     recipe: Recipe
     recipe_follower: Recipe
 
+    recipe_to_delete: Recipe
+
     user_client: APIClient
     anon_client: APIClient
 
@@ -37,6 +39,7 @@ class APITests(APITestCase, URLPatternsTestCase):
         cls.recipe = get_object_or_404(Recipe, pk=1)
         cls.recipe_follower = get_object_or_404(
             Recipe, author=cls.user_follower)
+        cls.recipe_to_delete = Recipe.objects.all().last()
 
     @classmethod
     def tearDownClass(cls):
@@ -92,7 +95,6 @@ class APITests(APITestCase, URLPatternsTestCase):
                 reverse('api:shopping_cart', args=(self.recipe.pk,)),
                 reverse('api:favorites', args=(self.recipe.pk,)),
                 reverse('api:subscribe', args=(self.user_follower.pk,)),
-
             ),
             (status.HTTP_401_UNAUTHORIZED, 'patch'): (
                 reverse('api:recipes-detail', args=(self.recipe.pk,)),
@@ -147,11 +149,15 @@ class APITests(APITestCase, URLPatternsTestCase):
             (status.HTTP_403_FORBIDDEN, 'patch'): (
                 reverse('api:recipes-detail', args=(self.recipe_follower.pk,)),
             ),
+            (status.HTTP_404_NOT_FOUND, 'patch'): (
+                reverse('api:recipes-detail', args=(10000,)),
+            ),
             (status.HTTP_403_FORBIDDEN, 'delete'): (
                 reverse('api:recipes-detail', args=(self.recipe_follower.pk,)),
             ),
             (status.HTTP_204_NO_CONTENT, 'delete'): (
-                reverse('api:recipes-detail', args=(self.recipe.pk,)),
+                reverse(
+                    'api:recipes-detail', args=(self.recipe_to_delete.pk,)),
                 reverse('api:shopping_cart', args=(self.recipe.pk,)),
                 reverse('api:favorites', args=(self.recipe.pk,)),
                 reverse('api:subscribe', args=(self.user_follower.pk,)),
