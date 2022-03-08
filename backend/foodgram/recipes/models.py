@@ -20,7 +20,8 @@ class Tag(models.Model):
     name = models.CharField(
         'Имя тега', max_length=150)
     color = models.CharField(
-        'Цвет', help_text='Введите код цвета в шестнадцетиричном формате',
+        'Цвет', help_text=('Введите код цвета в шестнадцетиричном формате '
+                           '(#ABCDEF)'),
         max_length=7, validators=(
             RegexValidator(
                 regex='^#[a-eA-E0-9]{6}$', code='wrong_hex_code',

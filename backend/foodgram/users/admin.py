@@ -16,21 +16,23 @@ class CustomUserAdmin(UserAdmin):
         'is_staff', 'is_active'
     )
     fieldsets = (
-        (None,
-         {'fields': (
-             'username', 'first_name', 'last_name', 'email', 'password',
-         )}),
-        ('Permissions',
-         {'fields': ('is_staff', 'is_active',
-                     )}),
+        (None, {
+            'fields': (
+                'username', 'first_name', 'last_name', 'email', 'password',
+            )
+        }),
+        ('Права', {
+            'fields': (
+                'is_staff', 'is_active',
+            )
+        }),
     )
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
             'fields': (
-                'username', 'first_name', 'last_name',
-                'email', 'password1', 'password2',
-                'is_staff', 'is_active')}
+                'username', 'first_name', 'last_name', 'email', 'password1',
+                'password2', 'is_staff', 'is_active')}
          ),
     )
     search_fields = ('email', 'first_name', 'last_name')

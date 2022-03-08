@@ -55,13 +55,12 @@ class APITests(APITestCase, URLPatternsTestCase):
     def setUpClass(cls):
         super().setUpClass()
 
-        cls.user = get_object_or_404(User, pk=2)
-        cls.user_follower = get_object_or_404(User, pk=3)
-        cls.tag = get_object_or_404(Tag, pk=1)
-        cls.ingredient = get_object_or_404(Ingredient, pk=802)
+        cls.tag = Tag.objects.all().first()
+        cls.ingredient = Ingredient.objects.all().first()
         cls.recipe = Recipe.objects.all().first()
-
         cls.recipe_count = Recipe.objects.all().count()
+        cls.user = cls.recipe.author
+        cls.user_follower = get_object_or_404(User, pk=3)
 
         for model in [Favorite, ShoppingCart]:
             model.objects.create(user=cls.user_follower, recipe=cls.recipe)

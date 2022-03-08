@@ -28,18 +28,20 @@ class APITests(APITestCase, URLPatternsTestCase):
     user_client: APIClient
     anon_client: APIClient
 
+    missing_id = 10000
+
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
 
-        cls.user = get_object_or_404(User, pk=2)
         cls.user_follower = get_object_or_404(User, pk=3)
-        cls.tag = get_object_or_404(Tag, pk=1)
-        cls.ingredient = get_object_or_404(Ingredient, pk=802)
+        cls.tag = Tag.objects.all().first()
+        cls.ingredient = Ingredient.objects.all().first()
         cls.recipe = Recipe.objects.all().first()
         cls.recipe_follower = get_object_or_404(
             Recipe, author=cls.user_follower)
         cls.recipe_to_delete = Recipe.objects.all().last()
+        cls.user = cls.recipe.author
 
     @classmethod
     def tearDownClass(cls):
@@ -82,7 +84,7 @@ class APITests(APITestCase, URLPatternsTestCase):
                 reverse('api:customuser-me'),
                 reverse('api:download_shopping_cart'),
                 reverse('api:subscriptions'),
-                reverse('api:customuser-detail', args=(10000,)),
+                reverse('api:customuser-detail', args=(self.missing_id,)),
             ),
             (status.HTTP_400_BAD_REQUEST, 'post'): (
                 reverse('api:customuser-list'),
@@ -106,9 +108,9 @@ class APITests(APITestCase, URLPatternsTestCase):
                 reverse('api:subscribe', args=(self.user_follower.pk,)),
             ),
             (status.HTTP_404_NOT_FOUND, 'get'): (
-                reverse('api:recipes-detail', args=(10000,)),
-                reverse('api:tags-detail', args=(10000,)),
-                reverse('api:ingredients-detail', args=(10000,)),
+                reverse('api:recipes-detail', args=(self.missing_id,)),
+                reverse('api:tags-detail', args=(self.missing_id,)),
+                reverse('api:ingredients-detail', args=(self.missing_id,)),
             ),
         }
 
@@ -150,7 +152,7 @@ class APITests(APITestCase, URLPatternsTestCase):
                 reverse('api:recipes-detail', args=(self.recipe_follower.pk,)),
             ),
             (status.HTTP_404_NOT_FOUND, 'patch'): (
-                reverse('api:recipes-detail', args=(10000,)),
+                reverse('api:recipes-detail', args=(self.missing_id,)),
             ),
             (status.HTTP_403_FORBIDDEN, 'delete'): (
                 reverse('api:recipes-detail', args=(self.recipe_follower.pk,)),
@@ -163,10 +165,10 @@ class APITests(APITestCase, URLPatternsTestCase):
                 reverse('api:subscribe', args=(self.user_follower.pk,)),
             ),
             (status.HTTP_404_NOT_FOUND, 'delete'): (
-                reverse('api:recipes-detail', args=(10000,)),
-                reverse('api:shopping_cart', args=(10000,)),
-                reverse('api:favorites', args=(10000,)),
-                reverse('api:subscribe', args=(10000,)),
+                reverse('api:recipes-detail', args=(self.missing_id,)),
+                reverse('api:shopping_cart', args=(self.missing_id,)),
+                reverse('api:favorites', args=(self.missing_id,)),
+                reverse('api:subscribe', args=(self.missing_id,)),
             ),
             (status.HTTP_403_FORBIDDEN, 'post'): (
                 reverse('api:login'),
@@ -176,16 +178,16 @@ class APITests(APITestCase, URLPatternsTestCase):
                 reverse('api:logout'),
             ),
             (status.HTTP_404_NOT_FOUND, 'get'): (
-                reverse('api:recipes-detail', args=(1000,)),
-                reverse('api:customuser-detail', args=(10000,)),
-                reverse('api:recipes-detail', args=(10000,)),
-                reverse('api:tags-detail', args=(10000,)),
-                reverse('api:ingredients-detail', args=(10000,)),
+                reverse('api:recipes-detail', args=(self.missing_id,)),
+                reverse('api:customuser-detail', args=(self.missing_id,)),
+                reverse('api:recipes-detail', args=(self.missing_id,)),
+                reverse('api:tags-detail', args=(self.missing_id,)),
+                reverse('api:ingredients-detail', args=(self.missing_id,)),
             ),
             (status.HTTP_404_NOT_FOUND, 'post'): (
-                reverse('api:shopping_cart', args=(10000,)),
-                reverse('api:favorites', args=(10000,)),
-                reverse('api:subscribe', args=(10000,)),
+                reverse('api:shopping_cart', args=(self.missing_id,)),
+                reverse('api:favorites', args=(self.missing_id,)),
+                reverse('api:subscribe', args=(self.missing_id,)),
             ),
         }
 

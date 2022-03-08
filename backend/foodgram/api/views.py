@@ -1,6 +1,8 @@
 from django.contrib.auth import get_user_model
+from django.db.models import Sum
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
+from django.conf import settings
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, mixins, permissions, status, viewsets
 from rest_framework.decorators import api_view, permission_classes
@@ -114,17 +116,21 @@ class ListFollowViewSet(generics.ListAPIView):
 
 
 def make_pdf(header, data, filename, http_status):
-    site_name = 'SITE_NAME'
+    site_name = settings.SITE_NAME
 
     pdf_data = [
         (pdf.Constant.DT_CAPTION, 'Мой список покупок:'),
         (pdf.Constant.DT_EMPTYLINE, '')
     ]
 
-    for ingredient in data.values():
+    for ingredient in data:
         pdf_data.append((
             pdf.Constant.DT_TEXT,
-            f'□ {ingredient[0]} - {ingredient[1]} {ingredient[2]}'))
+            '□ {name} - {amount} {unit}'.format(
+                name=ingredient['ingredient__name'],
+                amount=ingredient['amount'],
+                unit=ingredient['ingredient__measurement_unit']
+            )))
 
     pdf_obj = pdf.PDFMaker()
     pdf_obj.data = pdf_data
@@ -152,26 +158,13 @@ def download_shopping_cart(request):
             {'errors': 'Ваш список для покупок пустой'},
             status=status.HTTP_204_NO_CONTENT)
 
-    total_ingredients = {}
-
-    # @TODO изучить функции агрегирования
-    for ingredient in ingredients:
-        ing = ingredient.ingredient
-
-        try:
-            total_ingredients[ing.pk][1] += ingredient.amount
-        except KeyError:
-            total_ingredients[ing.pk] = [
-                ing.name,
-                ingredient.amount,
-                ing.measurement_unit]
+    total_ingredients = ingredients.values(
+        'ingredient__name', 'ingredient__measurement_unit').order_by(
+        'ingredient__name').annotate(amount=Sum('amount'))
 
     return make_pdf(
-        ('Наименование', 'Количество', 'Ед.измерения'),
-        total_ingredients,
-        'shoppingcart.pdf',
-        status.HTTP_200_OK
-    )
+        ('Наименование', 'Количество', 'Ед.измерения'), total_ingredients,
+        'shoppingcart.pdf', status.HTTP_200_OK)
 
 
 class ShoppingCartManageView(APIView):

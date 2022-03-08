@@ -149,3 +149,5 @@ DJOSER = {
 FIXTURE_DIRS = (
     os.path.join(BASE_DIR, 'api/tests/fixtures/'),
 )
+
+SITE_NAME = 'Продуктовый помощник'

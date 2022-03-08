@@ -30,7 +30,7 @@ class APITests(APITestCase, URLPatternsTestCase):
         super().setUpClass()
 
         cls.user = get_object_or_404(User, pk=2)
-        cls.ingredient = get_object_or_404(Ingredient, pk=802)
+        cls.ingredient = Ingredient.objects.all().first()
 
         cls.keys_get_list = sorted(['id', 'name', 'measurement_unit'])
         cls.keys_get_detail = cls.keys_get_list
