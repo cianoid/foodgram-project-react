@@ -17,9 +17,7 @@ class RecipeFilter(django_filters.FilterSet):
             return Recipe.objects.none()
 
         objects = getattr(self.request.user, related_field).all()
-        recipes = queryset.filter(pk__in=[item.recipe.pk for item in objects])
-
-        return recipes
+        return queryset.filter(pk__in=[item.recipe.pk for item in objects])
 
     def filter_is_in_shopping_cart(self, queryset, name, value):
         return self.__is_something(queryset, name, value, 'shopping_cart')
