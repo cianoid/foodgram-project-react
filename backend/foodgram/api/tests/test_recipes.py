@@ -5,7 +5,7 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APIClient, APITestCase, URLPatternsTestCase
 
-from recipes.models import Ingredient, IngredientRecipeRelation, Recipe, Tag
+from recipes.models import (Ingredient, IngredientRecipeRelation, Favorite, Recipe, ShoppingCart, Subscription, Tag)
 
 User = get_user_model()
 
@@ -21,7 +21,6 @@ class APITests(APITestCase, URLPatternsTestCase):
     tag: Tag
     ingredient: Ingredient
     recipe: Recipe
-    recipe_follower: Recipe
 
     recipe_count: int
 
@@ -38,9 +37,11 @@ class APITests(APITestCase, URLPatternsTestCase):
         cls.tag = get_object_or_404(Tag, pk=1)
         cls.ingredient = get_object_or_404(Ingredient, pk=802)
         cls.recipe = get_object_or_404(Recipe, pk=1)
-        cls.recipe_follower = get_object_or_404(Recipe, pk=3)
 
         cls.recipe_count = Recipe.objects.all().count()
+
+        for model in [Favorite, ShoppingCart]:
+            model.objects.create(user=cls.user_follower, recipe=cls.recipe)
 
     @classmethod
     def tearDownClass(cls):
@@ -49,6 +50,9 @@ class APITests(APITestCase, URLPatternsTestCase):
         Ingredient.objects.all().delete()
         Recipe.objects.all().delete()
         User.objects.all().delete()
+        Favorite.objects.all().delete()
+        Subscription.objects.all().delete()
+        ShoppingCart.objects.all().delete()
 
     def setUp(self):
         self.anon_client = APIClient()
@@ -127,8 +131,11 @@ class APITests(APITestCase, URLPatternsTestCase):
 
     def __recipe_detail(self, apiclient):
         """Получение рецепта."""
+        endpoint = reverse('api:recipes-detail', args=(self.recipe.pk,))
 
-        pass
+        response = apiclient.get(endpoint)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['id'], self.recipe.pk)
 
     def test_anon_recipe_list(self):
         """Неавторизованные пользователи. Список рецептов.
@@ -176,7 +183,7 @@ class APITests(APITestCase, URLPatternsTestCase):
 
         response = self.user_follower_client.get(endpoint)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['count'], 2)
+        self.assertEqual(response.data['count'], 1)
         self.assertEqual(response.data['results'][0]['id'], 1)
 
     def test_user_recipe_detail(self):
@@ -184,11 +191,3 @@ class APITests(APITestCase, URLPatternsTestCase):
 
         self.__recipe_detail(self.user_client)
 
-    def test_user_recipe_create(self):
-        """Авторизованные пользователи. Создание рецепта."""
-
-    def test_user_recipe_update(self):
-        """Авторизованные пользователи. Обновление рецепта."""
-
-    def test_user_recipe_delete(self):
-        """Авторизованные пользователи. Удаление рецепта."""
