@@ -9,9 +9,7 @@ services:
       - ./.env
 
   frontend:
-    build:
-      context: ../frontend
-      dockerfile: Dockerfile
+    image: cianoid/foodgram-frontend:latest
     volumes:
       - ../frontend/:/app/result_build/
 
