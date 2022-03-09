@@ -127,7 +127,8 @@ jobs:
             
             Статусы задач:
             - tests: ${{ needs.tests.result }}
-            - build_and_push_to_docker_hub: ${{ needs.build_and_push_to_docker_hub.result }}
+            - build_backend_and_push_to_docker_hub: ${{ needs.build_backend_and_push_to_docker_hub.result }}
+            - build_frontend_and_push_to_docker_hub: ${{ needs.build_frontend_and_push_to_docker_hub.result }}
             - deploy: ${{ needs.deploy.result }}
 
   send_message_if_fail:
