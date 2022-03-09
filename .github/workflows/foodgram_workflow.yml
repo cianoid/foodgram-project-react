@@ -76,7 +76,8 @@ jobs:
       - name: Push to Docker Hub
         uses: docker/build-push-action@v2
         with:
-          context: ./frontend/
+          context: .
+          file: ./frontend/Dockerfile
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/foodgram-frontend:latest
 
@@ -96,10 +97,9 @@ jobs:
           script: |
             cd ~/infrastructure/foodgram/
             sudo docker-compose stop
-            sudo docker-compose rm -f backend
+            sudo docker-compose rm -f backend frontend
             rm -f .env
             touch .env
-            echo 'hello' > test-file
             echo 'ALLOWED_HOSTS=${{ secrets.ALLOWED_HOSTS }}' >> .env
             echo 'DEBUG=0' >> .env
             echo 'SECRET_KEY=${{ secrets.SECRET_KEY }}' >> .env
