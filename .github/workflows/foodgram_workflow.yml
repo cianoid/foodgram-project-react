@@ -126,10 +126,10 @@ jobs:
             ${{ github.workflow }} из репозитория ${{ github.repository }} выполнен успешно!
             
             Статусы задач:
-            - tests: ${{ needs.tests.result }}
-            - build_backend_and_push_to_docker_hub: ${{ needs.build_backend_and_push_to_docker_hub.result }}
-            - build_frontend_and_push_to_docker_hub: ${{ needs.build_frontend_and_push_to_docker_hub.result }}
-            - deploy: ${{ needs.deploy.result }}
+            - Tests: ${{ needs.tests.result }}
+            - Build backend: ${{ needs.build_backend_and_push_to_docker_hub.result }}
+            - Build frontend: ${{ needs.build_frontend_and_push_to_docker_hub.result }}
+            - Deploy: ${{ needs.deploy.result }}
 
   send_message_if_fail:
     name: Send tg-message on job fail
@@ -147,10 +147,10 @@ jobs:
             Возникли ошибки при выполнении ${{ github.workflow }} в репозитории ${{ github.repository }}!
             
             Статусы задач:
-            - tests: ${{ needs.tests.result }}
-            - build_backend_and_push_to_docker_hub: ${{ needs.build_backend_and_push_to_docker_hub.result }}
-            - build_frontend_and_push_to_docker_hub: ${{ needs.build_frontend_and_push_to_docker_hub.result }}
-            - deploy: ${{ needs.deploy.result }}
+            - Tests: ${{ needs.tests.result }}
+            - Build backend: ${{ needs.build_backend_and_push_to_docker_hub.result }}
+            - Build frontend: ${{ needs.build_frontend_and_push_to_docker_hub.result }}
+            - Deploy: ${{ needs.deploy.result }}
 
   send_message_after_tests:
     name: Send tg-message after tests-job (if not main branch)
