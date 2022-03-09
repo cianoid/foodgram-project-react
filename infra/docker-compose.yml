@@ -14,7 +14,6 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ../frontend/:/app/result_build/
-#      - static_frontend_value:/app/result_build/static/
 
   backend:
     image: cianoid/foodgram:build20220309
@@ -37,7 +36,6 @@ services:
       - ../frontend/build:/var/html/frontend/
       - ../docs/:/var/html/frontend/api/docs/
       - static_backend_value:/var/html/static/
-#      - static_frontend_value:/var/html/frontend/static/
       - media_value:/var/html/media/
       - logs_value:/var/logs/
     depends_on:
@@ -45,6 +43,5 @@ services:
       - backend
 volumes:
   static_backend_value:
-#  static_frontend_value:
   media_value:
   logs_value:

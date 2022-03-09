@@ -80,8 +80,8 @@ else:
             'ENGINE': os.getenv(
                 'DB_ENGINE', default='django.db.backends.postgresql'),
             'NAME': os.getenv('DB_NAME', default='db'),
-            'USER': os.getenv('POSTGRES_USER', default='dbuser'),
-            'PASSWORD': os.getenv('POSTGRES_PASSWORD', default='dbpass'),
+            'USER': os.getenv('DB_USER', default='dbuser'),
+            'PASSWORD': os.getenv('DB_PASSWORD', default='dbpass'),
             'HOST': os.getenv('DB_HOST', default='db'),
             'PORT': os.getenv('DB_PORT', default=5432)
         }
