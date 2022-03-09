@@ -16,7 +16,7 @@ services:
       - ../frontend/:/app/result_build/
 
   backend:
-    image: cianoid/foodgram:build20220309
+    image: cianoid/foodgram-backend:latest
     domainname: foodgram.cianoid.org
     restart: always
     volumes:
