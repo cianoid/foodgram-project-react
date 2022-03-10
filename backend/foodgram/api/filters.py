@@ -7,7 +7,7 @@ from recipes.models import Recipe
 class RecipeFilter(django_filters.FilterSet):
     tags = django_filters.AllValuesMultipleFilter(
         field_name='tags__slug',
-        method='filter_tags'
+        method='filter_tags', lookup_expr='in'
     )
     is_in_shopping_cart = django_filters.BooleanFilter(
         field_name='is_in_shopping_cart', method='filter_is_in_shopping_cart')
@@ -22,7 +22,7 @@ class RecipeFilter(django_filters.FilterSet):
         return queryset.filter(pk__in=[item.recipe.pk for item in objects])
 
     def filter_tags(self, queryset, name, value):
-        return queryset.filter(tags__slug__in=value)
+        return queryset.filter(tags__slug__in=value).distinct()
 
     def filter_is_in_shopping_cart(self, queryset, name, value):
         return self.__is_something(queryset, name, value, 'shopping_cart')
