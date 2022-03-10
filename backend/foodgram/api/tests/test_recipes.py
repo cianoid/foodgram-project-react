@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.db import transaction
+from django.db import models, transaction
 from django.forms.models import model_to_dict
 from django.shortcuts import get_object_or_404
 from django.urls import include, path
@@ -164,8 +164,9 @@ class APITests(APITestCase, URLPatternsTestCase):
         endpoint = reverse('api:recipes-list') + '?tags={}'.format(
             self.tag.slug)
         tag1_recipe_count = self.tag.recipes.all().count()
-        tag1_2_recipe_count = Recipe.objects.filter(
-            tags__in=[1, 2]).distinct().count()
+
+        query = models.Q(tags__pk=1) | models.Q(tags__pk=2)
+        tag1_2_recipe_count = Recipe.objects.filter(query).distinct().count()
 
         response = apiclient.get(endpoint)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
