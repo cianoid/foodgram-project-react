@@ -164,10 +164,9 @@ class APITests(APITestCase, URLPatternsTestCase):
         endpoint = reverse('api:recipes-list') + '?tags={}'.format(
             self.tag.slug)
         tag1_recipe_count = self.tag.recipes.all().count()
-        tag1_2_recipe_count = (get_object_or_404(Tag, pk=1).
-                               recipes.all().count() +
-                               get_object_or_404(Tag, pk=2).
-                               recipes.all().count())
+        _pk1_count = get_object_or_404(Tag, pk=1).recipes.all().count()
+        _pk2_count = get_object_or_404(Tag, pk=2).recipes.all().count()
+        tag1_2_recipe_count = (_pk1_count + _pk2_count)
 
         response = apiclient.get(endpoint)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
