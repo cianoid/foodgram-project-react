@@ -24,7 +24,7 @@ class Tag(models.Model):
                            '(#ABCDEF)'),
         max_length=7, validators=(
             RegexValidator(
-                regex='^#[a-eA-E0-9]{6}$', code='wrong_hex_code',
+                regex='^#[a-ef-F0-9]{6}$', code='wrong_hex_code',
                 message='Неправильный формат цвета'), ))
     slug = models.SlugField(
         'Slug', help_text='Введите slug тега', unique=True)

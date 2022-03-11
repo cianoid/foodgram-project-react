@@ -67,7 +67,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'foodgram.wsgi.application'
 
 # Database
-if 'test' in sys.argv or 'runserver' in sys.argv:
+if set(sys.argv) & {'makemigrations', 'migrate', 'test', 'runserver'}:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
