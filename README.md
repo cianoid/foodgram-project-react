@@ -5,6 +5,8 @@
 
 ### Проект продуктовый помощник
 
+Адрес сайта проекта: http://foodgram.cianoid.org/
+
 API доступно по адресу: http://foodgram.cianoid.org/api/
 
 Документация к API: http://foodgram.cianoid.org/api/redoc/
