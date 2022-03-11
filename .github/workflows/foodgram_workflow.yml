@@ -52,7 +52,7 @@ jobs:
         with:
           context: ./backend/foodgram/
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/foodgram-backend:build22031103
+          tags: ${{ secrets.DOCKER_USERNAME }}/foodgram-backend:build22031201
 
   build_frontend_and_push_to_docker_hub:
     name: Build frontend and push Docker image to Docker Hub
@@ -78,7 +78,7 @@ jobs:
         with:
           context: ./frontend/
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/foodgram-frontend:build22031103
+          tags: ${{ secrets.DOCKER_USERNAME }}/foodgram-frontend:build22031201
 
   deploy:
     name: Deploy image on production server
