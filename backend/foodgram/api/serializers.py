@@ -237,6 +237,7 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
 class SubscriptionListSerializer(serializers.ModelSerializer):
     recipes = serializers.SerializerMethodField()
     recipes_count = serializers.SerializerMethodField()
+    is_subscribed = serializers.SerializerMethodField()
 
     def get_recipes(self, obj):
         recipes_limit = int(self.context['request'].GET.get(
@@ -251,8 +252,6 @@ class SubscriptionListSerializer(serializers.ModelSerializer):
         user = get_object_or_404(User, pk=obj.pk)
 
         return Recipe.objects.filter(author=user).count()
-
-    is_subscribed = serializers.SerializerMethodField()
 
     def get_is_subscribed(self, obj):
         if not self.context['request'].user.is_authenticated:
