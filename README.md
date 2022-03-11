@@ -5,11 +5,11 @@
 
 ### Проект продуктовый помощник
 
-API доступно по адресу: http://.cianoid.org/api/
+API доступно по адресу: http://foodgram.cianoid.org/api/
 
-Документация к API: http://yap.cianoid.org/api/redoc/
+Документация к API: http://foodgram.cianoid.org/api/redoc/
 
-Панель администратора: http://yap.cianoid.org/secure_zone/
+Панель администратора: http://foodgram.cianoid.org/secure_zone/
 
 Учетная запись администратоа: admin
 
