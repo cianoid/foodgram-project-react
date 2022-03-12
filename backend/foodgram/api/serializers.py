@@ -183,7 +183,7 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
         return obj
 
     def validate(self, data):
-        keys = ('ingredients', 'tags', 'image', 'text', 'name', 'cooking_time')
+        keys = ('ingredients', 'tags', 'text', 'name', 'cooking_time')
 
         errors = {}
 
@@ -205,6 +205,7 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
             setattr(instance, field, value)
 
         instance.tags.set(tags)
+        instance.image = validated_data.get('image', instance.image)
 
         instance.ingredients.clear()
         for ingredient in ingredients:
