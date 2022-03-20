@@ -11,7 +11,7 @@ load_dotenv()
 SECRET_KEY = os.getenv('SECRET_KEY', default='very-secret-key@#RFesf')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', 0)
+DEBUG = int(os.environ.get('DEBUG', '0'))
 
 ALLOWED_HOSTS = os.environ.get(
     'ALLOWED_HOSTS', 'localhost 127.0.0.1').split(' ')
@@ -67,7 +67,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'foodgram.wsgi.application'
 
 # Database
-if set(sys.argv) & {'makemigrations', 'migrate', 'test', 'runserver'}:
+if os.path.basename(sys.argv[0]) == 'manage.py':
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
