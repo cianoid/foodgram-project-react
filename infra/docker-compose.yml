@@ -9,12 +9,12 @@ services:
       - ./.env
 
   frontend:
-    image: cianoid/foodgram-frontend:build22032901
+    image: cianoid/foodgram-frontend:latest
     volumes:
       - frontend_value:/app/result_build/build/
 
   backend:
-    image: cianoid/foodgram-backend:build22032901
+    image: cianoid/foodgram-backend:latest
     domainname: foodgram.cianoid.org
     restart: always
     volumes:
