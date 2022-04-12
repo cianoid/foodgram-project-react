@@ -20,19 +20,19 @@ class Tag(models.Model):
     name = models.CharField(
         'Имя тега', max_length=150, unique=True)
     color = models.CharField(
-        'Цвет', help_text=('Введите код цвета в шестнадцетиричном формате '
-                           '(#ABCDEF)'),
+        'Цвет', help_text=(
+            'Введите код цвета в шестнадцетиричном формате (#ABCDEF)'),
         max_length=7, validators=(
             RegexValidator(
-                regex='^#[a-ef-F0-9]{6}$', code='wrong_hex_code',
-                message='Неправильный формат цвета'), ))
+                regex='^#[a-fA-F0-9]{6}$', code='wrong_hex_code',
+                message='Неправильный формат цвета'),))
     slug = models.SlugField(
         'Slug', help_text='Введите slug тега', unique=True)
 
     class Meta:
         verbose_name = 'тег'
         verbose_name_plural = 'теги'
-        ordering = ('id', )
+        ordering = ('id',)
 
     def __str__(self):
         return self.name
@@ -47,7 +47,7 @@ class Ingredient(models.Model):
     class Meta:
         verbose_name = 'ингридиент'
         verbose_name_plural = 'ингридиенты'
-        ordering = ('id', )
+        ordering = ('id',)
         constraints = [
             models.UniqueConstraint(
                 fields=('name', 'measurement_unit'), name='Unique ingredient')
@@ -79,7 +79,7 @@ class Recipe(BaseModel):
     class Meta:
         verbose_name = 'рецепт'
         verbose_name_plural = 'рецепты'
-        ordering = ('-created', )
+        ordering = ('-created',)
 
     def __str__(self):
         return self.name
